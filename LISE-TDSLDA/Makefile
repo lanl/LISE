@@ -20,13 +20,17 @@ OBJS1 = deform.o densities.o external_pot.o operators.o create_destroy_groups.o 
 
 OBJS2 = deform.o densities.o external_pot.o operators.o create_destroy_groups.o fposio-wf.o ctdslda_rst.o nuclear-gpu.o getnwfip.o potentials.o system_energy.o wf.o rotation.o  
 
+OBJS3 = postprocess.o deform.o operators.o potentials.o
+
 LINKOPT = ${CUDA_LIBS} -lcudart -lcufft  ${FFTW_LIBS}  -lfftw3 ${LAPACK_LIBS} -llapack ${MPI_LIBS} -lmpi_ibm -lm
 
 EXE1 = lise-tdslda-gpu
 
 EXE2 = lise-tdslda-rst-gpu
 
-all: $(EXE1) $(EXE2)
+EXE3 = lise-tdslda-postprocess
+
+all: $(EXE1) $(EXE2) $(EXE3)
 
 nuclear-gpu.o: nuclear-gpu.c vars.h nuclear-gpu.h
 	cp nuclear-gpu.c nuclear-gpu.cu; nvcc --gpu-architecture=sm_60 -c -O3 ${FFTW_INCLUDES} ${MPI_INCLUDES} -D__INTEL_COMPILER nuclear-gpu.cu;
@@ -58,9 +62,11 @@ rotation.o: rotation.c
 	$(COMP) -c -O3 ${MPI_INCLUDES} ${FFTW_INCLUDES} ${CUDA_INCLUDES} rotation.c;
 fluctuations.o: fluctuations.c vars.h
 	$(COMP) -c -O3 ${MPI_INCLUDES} ${FFTW_INCLUDES} ${CUDA_INCLUDES} fluctuations.c;
+postprocess.o: postprocess.c vars.h
+	$(COMP) -c -O3 ${MPI_INCLUDES} ${FFTW_INCLUDES} ${CUDA_INCLUDES} postprocess.c;
 
 clean:
-	rm -f $(OBJS1) $(OBJS2) $(EXE1) $(EXE2)
+	rm -f $(OBJS1) $(OBJS2) $(OBJS3) $(EXE1) $(EXE2) $(EXE3)
 
 $(EXE1): $(OBJS1) 
 	$(COMP) -o $(EXE1) $(OBJS1) $(LINKOPT) 
@@ -68,6 +74,8 @@ $(EXE1): $(OBJS1)
 $(EXE2): $(OBJS2) 
 	$(COMP) -o $(EXE2) $(OBJS2) $(LINKOPT) 
 
+$(EXE3): $(OBJS3)
+	$(COMP) -o $(EXE3) $(OBJS3) $(LINKOPT)
 
 
 

@@ -1,0 +1,14 @@
+#!/bin/bash
+# Begin LSF Directives
+#BSUB -P NPH126
+#BSUB -W 12:00
+#BSUB -nnodes 150
+#BSUB -J RunSim123
+#BSUB -o RunSim123.%J
+#BSUB -e RunSim123.%J
+
+cd $LS_SUBCWD
+date
+
+jsrun -n 900 -a 1 -g 1 ./xnuclear-gpu -g 1 -f 7 -i 0 -s 200000 -t 43200 -e 0 -p 5 -m 5 >& 236U_TD.out
+

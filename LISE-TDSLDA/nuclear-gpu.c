@@ -1292,9 +1292,9 @@ __global__ void fix_rotation( cufftDoubleComplex * df_dt , cufftDoubleComplex * 
   cufftDoubleComplex sypsi;
   cufftDoubleComplex zmi,zi;
   zi.x = (cufftDoubleReal) 0.;
-  zi.x = (cufftDoubleReal) 1.;
+  zi.y = (cufftDoubleReal) 1.;
   zmi.x = (cufftDoubleReal) 0.;
-  zmi.x = (cufftDoubleReal) -1.;
+  zmi.y = (cufftDoubleReal) -1.;
  
   if(i<2*d_nxyz){
     int i1=i;

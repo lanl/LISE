@@ -39,7 +39,7 @@ void makeFragment(double * dens, double *densf,double *theta,int n){
 }
 
 // calculate the coulomb energy between two fragments
-/*
+
 double coul_frag( double * rho , double * xa , double * ya , double * za , int nxyz , double dxyz,double z0 ){
     
     int i,j;
@@ -56,7 +56,7 @@ double coul_frag( double * rho , double * xa , double * ya , double * za , int n
     double e2 = 197.3269631 / 137.035999679 ;
     return( sum*e2*dxyz*dxyz );
 }
-*/
+
 
 
 double system_energy( Couplings * cc_edf , Densities * dens , Densities * dens_p , Densities * dens_n , const int isospin , const int nxyz , double complex * delta , double * chi, const int ip , const int root_p , const int root_n , const MPI_Comm comm , const double hbar2m , const double dxyz , Lattice_arrays * latt_coords , FFtransf_vars * fftransf_vars , MPI_Status * status , const double time , FILE * fd )
@@ -395,38 +395,49 @@ double system_energy( Couplings * cc_edf , Densities * dens , Densities * dens_p
 
 // calculate the distance between two fragments
 
-void get_distance(Densities * dens_p , Densities * dens_n, Fragments * frag, const int nxyz , const double dxyz , Lattice_arrays * latt , double* distance)
+double get_distance(Densities * dens_p , Densities * dens_n, Fragments * frag, const int nxyz , const double dxyz , Lattice_arrays * latt , double *rcm_L, double *rcm_R, double *A_L, double *Z_L, double *A_R, double *Z_R)
 {
   
   int ixyz, i;
-  //double vel_L[3], vel_R[3];
+
   double xcm_L, ycm_L, zcm_L, xcm_R, ycm_R, zcm_R; 
-  double num_L, num_R;
+
   // density of fragments
   double *rhof;
+
+  double distance;
   assert(rhof  = (double *) malloc(nxyz*sizeof(double)));
-  
+ 
   makeFragment(dens_n->rho, frag->densf_n,frag->thetaL,nxyz);
   makeFragment(dens_p->rho, frag->densf_p,frag->thetaL,nxyz);
 
-  for(i=0;i<nxyz;i++) rhof[i] = frag->densf_n[i] + frag->densf_p[i];
-  
-  num_L = center_dist( rhof, nxyz , latt , &xcm_L, &ycm_L , &zcm_L ) ;
+  *Z_L = center_dist( frag->densf_p, nxyz , latt , &xcm_L, &ycm_L , &zcm_L ) ;
 
+  for(i=0;i<nxyz;i++) rhof[i] = frag->densf_n[i] + frag->densf_p[i];
+
+  *A_L = center_dist( rhof, nxyz , latt , &xcm_L, &ycm_L , &zcm_L ) ;
 
   makeFragment(dens_n->rho, frag->densf_n,frag->thetaR,nxyz);
   makeFragment(dens_p->rho, frag->densf_p,frag->thetaR,nxyz);
 
+  *Z_R = center_dist( frag->densf_p, nxyz , latt , &xcm_R, &ycm_R , &zcm_R ) ;
+
   for(i=0;i<nxyz;i++) rhof[i] = frag->densf_n[i] + frag->densf_p[i];
   
-  num_R = center_dist( rhof, nxyz , latt , &xcm_R, &ycm_R , &zcm_R ) ;
+  *A_R = center_dist( rhof, nxyz , latt , &xcm_R, &ycm_R , &zcm_R ) ;
 
-  *distance = sqrt( (xcm_R-xcm_L)*(xcm_R-xcm_L) + (ycm_R-ycm_L)*(ycm_R-ycm_L) + (zcm_R-zcm_L)*(zcm_R-zcm_L));
+  rcm_L[0] = xcm_L;  rcm_L[1] = ycm_L;  rcm_L[2] = zcm_L;
 
-  //free(rho_nf); free(rho_pf); free(rho_f);
+  rcm_R[0] = xcm_R;  rcm_R[1] = ycm_R;  rcm_R[2] = zcm_R;
 
-  //free(thetaL); free(thetaR);
+  distance = sqrt( (xcm_R-xcm_L)*(xcm_R-xcm_L) + (ycm_R-ycm_L)*(ycm_R-ycm_L) + (zcm_R-zcm_L)*(zcm_R-zcm_L));
+
   free(rhof);
 
-}
+  *A_L *= dxyz;
+  *Z_L *= dxyz;
+  *A_R *= dxyz;
+  *Z_R *= dxyz;
 
+  return(distance);
+}

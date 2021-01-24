@@ -293,7 +293,7 @@ void mix_potentials(cufftDoubleReal * potentials, cufftDoubleReal * potentials_n
 
 int make_boost_quadrupole(double complex * boost_field, const int n, Lattice_arrays * lattice_coords, double alpha);
 
-int make_boost_twobody(double complex *boost_field, const int n, Lattice_arrays * lattice_coords, double ecm, double A_L, double A_R, double Z_L, double Z_R, double *rcm_L, double *rcm_R, int ip, double b);
+int make_boost_twobody(double complex *boost_field, const int n, Lattice_arrays * lattice_coords, double ecm, double A_L, double A_R, double Z_L, double Z_R, double *rcm_L, double *rcm_R, int ip, double b, double ec);
 
 int make_boost_onebody(double complex *boost_field, const int n, Lattice_arrays * lattice_coords, double ecm, double A);
 
@@ -364,8 +364,9 @@ double center_dist_pn( double * rho_p , double * rho_n , const int n , Lattice_a
 
 
 // Get distance of fragments (in fission).
-void get_distance(Densities * dens_p , Densities * dens_n, Fragments * frag, const int nxyz , const double dxyz , Lattice_arrays * latt , double* distance);
+double get_distance(Densities * dens_p , Densities * dens_n, Fragments * frag, const int nxyz , const double dxyz , Lattice_arrays * latt , double *rcm_L, double *rcm_R, double *A_L, double *Z_L, double *A_R, double *Z_R);
 
+double coul_frag( double * rho , double * xa , double * ya , double * za , int nxyz , double dxyz,double z0 );
 // Functions tracks the rotation angle and velocity.
 // Noted: the evolution functions are also updated, an extra omega . J term is added to reduce the rotation of the system.
 
@@ -488,8 +489,16 @@ int main( int argc , char ** argv )
   int irun = 0;  // nuclear fission
   int op_read_flag=-1;
 
-  // SJ: distance of fragments
+  /*
+     distance: distance between two fragments (in fm).
+     ec: Coulomb energy between two fragments (in MeV).
+     A_L, A_R: mass numbers of left (L) and right (R) fragments.
+     Z_L, Z_R: proton numbers of left (L) and right (R) fragments.
+     rcm_L, rcm_R: centos of mass coordinates of left (L) and right (R) fragments.
+   */
   double distance;  // in fm
+  double ec, A_L, A_R, Z_L, Z_R;
+  double rcm_L[3], rcm_R[3];
 
   double d0 = 30.;  // in fm, if distance > d0, stop the evolution  
 
@@ -527,7 +536,13 @@ int main( int argc , char ** argv )
   int iext=0;
   double z0=0.,wneck=1000.,rneck=1000.;
   int p;
-  while ((p=getopt(argc,argv,"g:s:p:m:d:a:c:t:e:z:r:i:w:f:"))!=-1) {
+
+  // collisions
+  // ecm: center of mass energy of two fragments (in MeV).
+  // b: impact parameter.
+  double ecm=0.,b=0.;
+
+  while ((p=getopt(argc,argv,"g:s:p:m:d:a:c:t:e:z:r:i:w:f:v:b:"))!=-1) {
     switch(p){
     case 'g': gpupernode=atoi(optarg);break; 
     case 's': total_time_steps=atoi(optarg);break;
@@ -545,6 +560,8 @@ int main( int argc , char ** argv )
     case 'x': strcpy(file_extern_op,optarg); op_read_flag=0;break;
 #ifdef EXTBOOST
     case 'a': alpha=atof(optarg); break;
+    case 'v': ecm=atof(optarg);break;
+    case 'b': b=atof(optarg);break;
 #endif
     }
   }
@@ -656,7 +673,6 @@ int main( int argc , char ** argv )
   cudaMemcpy(d_xyz+nxyz,latt.ya,nxyz*sizeof(cufftDoubleReal),cudaMemcpyHostToDevice) ; 
   cudaMemcpy(d_xyz+2*nxyz,latt.za, nxyz*sizeof(cufftDoubleReal),cudaMemcpyHostToDevice) ; 
   define_VF_gpu(d_avf,d_xyz,nxyz,isospin);
-
 
   // fluctuations
   double *chi;
@@ -1263,10 +1279,9 @@ if(icub==1)
 
   pots.ctime=(double)Ctime;
 
-#ifdef EXTBOOST
+  compute_densities_gpu( nxyz , nwfip , d_wavf , d_grad, d_lapl, d_wfft , d_fft3 , d_kxyz , d_plan_b , d_plan_r, d_plan_d , batch , d_densities , d_avf, commw , copy_to , copy_from , isoff , Ctime, divj );
 
-  double ecm, Aa, A_L, A_R, Z_L, Z_R;
-  double b, L ;
+#ifdef EXTBOOST
 
 #ifndef RSTRT
 
@@ -1294,39 +1309,29 @@ if(icub==1)
 
   if(irun == 1)  // two nuclei collision
     {
+      // distance between fragments.
+      distance = get_distance( &dens_p, &dens_n, &frag, nxyz, dxyz, &latt, rcm_L, rcm_R, &A_L, &Z_L, &A_R,&Z_R);
 
-      // two O16 collision
-
-      // make phase difference on two fragments      
-
-      ecm = 40.;
-      A_L = 16.0; A_R = 16.0;
-      Z_L = 8.0; Z_R = 8.0;
-
-      double _rcm_L[3] = {0.0, 0.0, -20.0};
-      double _rcm_R[3] = {0.0, 0.0, 20.0};
-
-      b = 8.; // fm, impact parameter
-      //make_phase_diff(boost_field, nxyz, &latt, phase);
-
-      L = 2*A_L*mass*pow(b/2.,2);
+      // calculates the coloumb energy between the two fragments.
+      ec = coul_frag( dens_p.rho , latt.xa , latt.ya , latt.za , nxyz , dxyz, 0. );
       
       if(ip == 0)
 	{
-	  printf("N_L = %.1f, N_R = %.1f, Z_L = %.1f, Z_R = %.1f\n", A_L-Z_L, A_R-Z_R, \
-		 Z_L, Z_R);
+	  printf("N_L = %.1f, N_R = %.1f, Z_L = %.1f, Z_R = %.1f\n", A_L-Z_L, A_R-Z_R, Z_L, Z_R);
+
+          printf("xmc_L = %f, ycm_L = %f, zcm_L = %f, xcm_R = %f, ycm_R = %f, zcm_R = %f\n",rcm_L[0],rcm_L[1],rcm_L[2],rcm_R[0],rcm_R[1],rcm_R[2]);
+
+          printf(" Colomb energy between two fragments: %f\n", ec);
 	  
 	  printf("c.m. energy (including the initial inter Coulomb energy): %.2f\n", ecm);
 	}
-
-      
 
       if(iext == 0)  // boost two nuclei directly, no external field is added
 	{
 
 	  if (ip == 0) printf("Immediate boost is performed on wavefunctions. \n");
 	  
-	  if ((ierr = make_boost_twobody(boost_field, nxyz, &latt, ecm, A_L, A_R, Z_L, Z_R, _rcm_L, _rcm_R, ip, b)) !=0)
+	  if ((ierr = make_boost_twobody(boost_field, nxyz, &latt, ecm, A_L, A_R, Z_L, Z_R, rcm_L, rcm_R, ip, b, ec)) !=0)
 	  {
 	    printf("error in make_boost_twobody! exiting ... \n");
 	    MPI_Abort(commw, ierr);
@@ -1965,7 +1970,7 @@ if(icub==1)
 #ifdef BENCHMARK                        
 	b_it(&itgtod,&it_clk);
 #endif	          
-	get_distance( &dens_p, &dens_n, &frag, nxyz, dxyz, &latt, &distance );
+	distance = get_distance( &dens_p, &dens_n, &frag, nxyz, dxyz, &latt, rcm_L, rcm_R, &A_L, &Z_L, &A_R,&Z_R);
 #ifdef BENCHMARK                  
 	sys_tim += e_it(0,&itgtod,&it_clk);
 #endif      	    

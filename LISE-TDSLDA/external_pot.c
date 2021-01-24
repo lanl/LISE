@@ -239,7 +239,7 @@ double transit(double x, double w, double alpha)
 
 }
 
-int make_boost_twobody(double complex *boost_field, const int n, Lattice_arrays * lattice_coords, double ecm, double A_L, double A_R, double Z_L, double Z_R, double *rcm_L, double *rcm_R, int ip, double b)
+int make_boost_twobody(double complex *boost_field, const int n, Lattice_arrays * lattice_coords, double ecm, double A_L, double A_R, double Z_L, double Z_R, double *rcm_L, double *rcm_R, int ip, double b, double ec)
 {
 
 
@@ -260,8 +260,6 @@ int make_boost_twobody(double complex *boost_field, const int n, Lattice_arrays 
   double mass_n = 939.565346 ;
   double mass = .5 * ( mass_p + mass_n ) ;
   
-  double e2 = 197.3269631 / 137.035999679 ;
-
 
   // distance between two nuclei
   double distance = sqrt(pow(rcm_L[0]-rcm_R[0],2.0)   
@@ -269,7 +267,6 @@ int make_boost_twobody(double complex *boost_field, const int n, Lattice_arrays 
 			 + pow(rcm_L[2]-rcm_R[2],2.0));
 
   
-  double ec = e2*Z_L*Z_R / distance;   // coulomb energy now, ecm must be larger than ec
 
   if (ec > ecm)
     {

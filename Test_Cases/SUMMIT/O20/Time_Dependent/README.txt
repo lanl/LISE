@@ -1,4 +1,4 @@
-The file explains how to time evolve hfb wfs LISE time dependent code. In this test example we are...
+The file explains how to time evolve hfb wfs LISE time dependent code. In this test example we are evolving O20 wfs created from the self consistent static LISE solver for 1000 timesteps.
 
 *** Setup ***
 In order to time evolve the O20 wfs the following five files are needed in the working directory: lise-tdslda-gpu, myjob_TD.lsf, wf_p.cwr, wf_n.cwr, info.slda_solver.

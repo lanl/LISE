@@ -542,19 +542,14 @@ int main( int argc , char ** argv )
   // b: impact parameter.
   double ecm=0.,b=0.;
 
-  while ((p=getopt(argc,argv,"g:s:p:m:d:a:c:t:e:z:r:i:w:f:v:b:"))!=-1) {
+  while ((p=getopt(argc,argv,"g:s:d:a:c:t:e:i:f:v:b:x:"))!=-1) {
     switch(p){
     case 'g': gpupernode=atoi(optarg);break; 
     case 's': total_time_steps=atoi(optarg);break;
-    case 'p': time_bootstrap=atoi(optarg);break;
-    case 'm': mxp=atoi(optarg);break;
     case 'd': strcpy(dir_in,optarg);break;
     case 'c': c0=(cufftDoubleReal) atof(optarg);break;
     case 'e': iext=atoi(optarg); break;
     case 'f': iforce=atoi(optarg); break;
-    case 'z': z0=atof(optarg); break;
-    case 'w': wneck=atof(optarg);break;
-    case 'r': rneck=atof(optarg);break;
     case 'i': irun = atoi(optarg);break; 
     case 't': req_tim=atof(optarg);break; /* has to be in seconds */
     case 'x': strcpy(file_extern_op,optarg); op_read_flag=0;break;

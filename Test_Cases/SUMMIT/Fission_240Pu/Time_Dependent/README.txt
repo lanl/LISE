@@ -10,6 +10,8 @@ wf_p.cwr, wf_n.cwr are the quasiparticle wf files generated from the static solv
 	
 The info.slda_solver file is also generated from the static solver and contains the following information about the wfs (in this order): the number of proton wfs, the number of neutron wfs, the proton chemical potential, the neutron chemical potential, the lattice spacing the x,y,z directions, the number of lattice points in the x,y,z directions, and the cutoff for the energy.
 
+The files info.slda_solver, wf_p.cwr, wf_n.cwr should be copied from the static solver into the run directory.
+
 The myjob_TD.lsf file is a script used to run the job (will change depending on system). In the jsrun command line:
 
 	jsrun -n 900 -a 1 -g 1 ./lise-tdslda-gpu -g 1 -f 7 -i 0 -s 200000 -t 43200 -e 0 -p 5 -m 5 >& 240Pu_TD.out
@@ -113,3 +115,10 @@ Time_Dependent/
 |-- results_td.dat
 |-- wf_n.cwr
 `-- wf_p.cwr
+
+*** Size of Files in Bytes ***
+35389440 	-- dens_all_p.dat.X
+35389440 	-- dens_all_n.dat.X
+97844723712	-- wf_n.cwr
+97844723712	-- wf_p.cwr
+68 		-- info.slda_solver

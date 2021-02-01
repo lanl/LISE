@@ -3,9 +3,9 @@ The file explains how to generate coordinate space solutions for an deformed Pu2
 *** Setup ***
 In order to generate HFB fission wfs the following six files are needed in the working directory: dens_p.cwr, dens_n.cwr, constr.cwr, input_file.txt, lise-static, myjob.lsf.
 
-The initial input densities (dens_n.cwr, dens_p.cwr) were generated from the HFB static solver hfbtho.out.  In order to generate them first converge one Pu240 deformed density in a 24x24x48 box at lattice spacing 1.25. Next write the densities into the approriate form (explained below with the files dens_n_0.cwr, dens_p_0.cwr), along with the constraints in the file constr.cwr. This is a binary file which contains (in this order) the dipole, quadrupole, and octupole moments of the compound nucleus.
+The initial input densities (dens_n.cwr, dens_p.cwr) were generated from the HFB static solver "hfbtho" (https://www.osti.gov/biblio/1310177-hfbtho).  In order to generate them first converge one Pu240 deformed density in a 24x24x48 box at lattice spacing 1.25. Next write the densities into the approriate form (explained below with the files dens_n_0.cwr, dens_p_0.cwr), along with the constraints in the file constr.cwr. This is a binary file which contains (in this order) the dipole, quadrupole, and octupole moments of the compound nucleus.
 
-Note: in order to get a reasonable solution the static solver may need to be ran a couple of times to adjust the chemical potential accordingly.
+Note: in order to get a reasonable solution the static solver may need to be run a couple of times to adjust the chemical potential accordingly. The provided densities already include converged values for the chemical potential.
 
 *** Inputs ***
 The lise-static is the executable, generated from compiling the code in the LISE-SLDAsolver folder (the makefile should be modified depending on the architecture of the machine the simulations are run on). 
@@ -144,4 +144,15 @@ Static
 |-- wf_n.cwr
 `-- wf_p.cwr
 
-
+*** Size of Files in Bytes ***
+1548356 	-- pots_p_0.cwr
+1548356		-- pots_p_1.cwr
+1548356		-- pots_n_0.cwr
+1548356		-- pots_n_1.cwr
+1105996 	-- dens_p_0.cwr
+1105996 	-- dens_p_1.cwr
+1105996		-- dens_n_0.cwr
+1105996		-- dens_n_1.cwr
+97844723712	-- wf_n.cwr
+97844723712	-- wf_p.cwr
+68 		-- info.slda_solver

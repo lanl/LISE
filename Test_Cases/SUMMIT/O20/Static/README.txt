@@ -162,4 +162,15 @@ Static
 |-- wf_n.cwr
 `-- wf_p.cwr
 
-
+*** Size of Files in Bytes ***
+28740 		-- pots_p_0.cwr
+28740 		-- pots_p_1.cwr
+28740 		-- pots_n_0.cwr
+28740 		-- pots_n_1.cwr
+20556 		-- dens_p_0.cwr
+20556 		-- dens_p_1.cwr
+20556 		-- dens_n_0.cwr
+20556 		-- dens_n_1.cwr
+33554432 	-- wf_n.cwr
+33554432 	-- wf_p.cwr
+68 		-- info.slda_solver

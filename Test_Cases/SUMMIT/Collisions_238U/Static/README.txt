@@ -3,7 +3,7 @@ The file explains how to generate coordinate space solutions for an U238+U238 sy
 *** Setup ***
 In order to generate HFB collision wfs the following five files are needed in the working directory: dens_p.cwr, dens_n.cwr, input_file.txt, lise-static, myjob.lsf.
 
-The initial input densities (dens_n.cwr, dens_p.cwr) were generated from the HFB static solver "hfbtho".  Any HFB static solver may be used.  In order to generate the densities begin by converging one U238 ground state solution in a 24x24x24 box at lattice spacing 1.25. Second, copy two of these density profiles onto a larger box spacing them out accordingly (for example seperating the center of masses by 45 fm).  Afterwards adjust the chemical potential by accounting for the coulomb interaction between the two nuclei (only the proton chemical potential should be adjusted).  The explicit formula is given by mu_new = mu_old + e^2 Z1 Z2 / r (where e^2 = 1.44, Z1 is the charge of the first nucleus, Z2 is the charge of the second nucleus, and r is the initial seperation between the two).  Finally write the densities into the approriate form (explained below in the files dens_n_0.cwr, dens_p_0.cwr), along with the new chemical potential.
+The initial input densities (dens_n.cwr, dens_p.cwr) were generated from the HFB static solver "hfbtho" (https://www.osti.gov/biblio/1310177-hfbtho).  Any HFB static solver may be used.  In order to generate the densities begin by converging one U238 ground state solution in a 24x24x24 box at lattice spacing 1.25. Second, copy two of these density profiles onto a larger box spacing them out accordingly (for example seperating the center of masses by 45 fm).  Afterwards adjust the chemical potential by accounting for the coulomb interaction between the two nuclei (only the proton chemical potential should be adjusted).  The explicit formula is given by mu_new = mu_old + e^2 Z1 Z2 / r (where e^2 = 1.44, Z1 is the charge of the first nucleus, Z2 is the charge of the second nucleus, and r is the initial seperation between the two).  Finally write the densities into the approriate form (explained below in the files dens_n_0.cwr, dens_p_0.cwr), along with the new chemical potential.
 
 *** Inputs ***
 The lise-static is the executable, generated from compiling the code in the LISE-SLDAsolver folder (the makefile should be modified depending on the architecture of the machine the simulations are run on). 
@@ -142,4 +142,15 @@ Static
 |-- wf_n.cwr
 `-- wf_p.cwr
 
-
+*** Size of Files in Bytes ***
+2064452 	-- pots_p_0.cwr
+2064452		-- pots_p_1.cwr
+2064452		-- pots_n_0.cwr
+2064452		-- pots_n_1.cwr
+1474636 	-- dens_p_0.cwr
+1474636 	-- dens_p_1.cwr
+1474636		-- dens_n_0.cwr
+1474636		-- dens_n_1.cwr
+173946175488	-- wf_n.cwr
+173946175488	-- wf_p.cwr
+68 		-- info.slda_solver

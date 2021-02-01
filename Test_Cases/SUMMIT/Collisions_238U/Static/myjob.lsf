@@ -11,5 +11,5 @@
 cd $LS_SUBCWD
 date
 
-jsrun -n 3864 -a 1 -g 0 ./xslda-c_omp input_file.txt > 238U.out
+jsrun -n 3864 -a 1 -g 0 ./lise-static input_file.txt > U238.out
 

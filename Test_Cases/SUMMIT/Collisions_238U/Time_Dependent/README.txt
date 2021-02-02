@@ -1,4 +1,4 @@
-The file explains how to run a time dependent nuclear collisions calculation using the LISE time dependent code for a U238 + U238 system. In this test case the impact parameter is set to 0 fm and the initial collision energy for each nucleus (in the center of mass frame) is set to 800 MeV.  Collisions are programmed to end when center of masses of the two nuclei are seperated by 50fm.
+The file explains how to run a time dependent nuclear collisions calculation using the LISE time dependent code for a U238 + U238 system. In this test case the impact parameter is set to 0 fm and the initial collision energy in the center of mass frame is set to 800 MeV (the total TKE of the incident system = KE_L + KE_R + Coul).  Collisions are programmed to end when center of masses of the two nuclei are seperated by 50fm.
 
 *** Setup ***
 In order to time evolve the wfs the following five files are needed in the working directory: lise-tdslda-gpu, myjob_TD.lsf, wf_p.cwr, wf_n.cwr, info.slda_solver.

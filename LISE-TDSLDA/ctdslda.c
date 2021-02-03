@@ -330,7 +330,7 @@ void update_potentials_gpu( cufftDoubleReal * potentials , int nxyz , cufftDoubl
 void test_norm_gpu( int nxyz , int nwfip , cufftDoubleComplex * wavf , int batch, double * cpu_norm );
 void adams_bashforth_pm_gpu( const int nn_time , const int n0_time , const int n1_time , const int m0_time , const int m1_time , const int m2_time , const int m3_time , const int nxyz , const int nwfip , cufftDoubleComplex * wavf , cufftDoubleComplex * wavf_td , cufftDoubleComplex * wavf_p , cufftDoubleComplex * wavf_c , cufftDoubleComplex * wavf_m );
 void adams_bashforth_cy_gpu( const int nn_time , const int n0_time , const int n1_time , const int m0_time , const int m1_time , const int m2_time, const int nxyz , const int nwfip , cufftDoubleComplex * wavf , cufftDoubleComplex * wavf_td , cufftDoubleComplex * wavf_p , cufftDoubleComplex * wavf_c , cufftDoubleComplex * wavf_m , cufftDoubleComplex * grad, cufftDoubleComplex * fft3 , cufftHandle plan_b , cufftHandle plan_r , cufftDoubleComplex * df_dt , cufftDoubleReal * potentials,const int batch,cufftDoubleReal * kxyz,cufftHandle plan_ev,cufftDoubleComplex *fft3_ev, cufftDoubleReal *xyz, cufftDoubleReal *rcm );
-void adams_bashforth_dfdt_gpu(const int nxyz , const int nwfip , cufftDoubleComplex * wavf , cufftDoubleComplex * wavf_td , cufftDoubleComplex * grad, cufftDoubleComplex * fft3 , cufftHandle plan_b , cufftHandle plan_r , cufftDoubleReal * potentials, const int batch, cufftDoubleReal * kxyz,int i_saveocc,double * e_qp, double * e_sp, double * n_qp,cufftHandle plan_ev,cufftDoubleComplex *fft3_ev,cufftDoubleReal *xyz,cufftDoubleReal *rcm,double * lz_qp);
+void adams_bashforth_dfdt_gpu(const int nxyz , const int nwfip , cufftDoubleComplex * wavf , cufftDoubleComplex * wavf_td , cufftDoubleComplex * grad, cufftDoubleComplex * fft3 , cufftHandle plan_b , cufftHandle plan_r , cufftDoubleReal * potentials, const int batch, cufftDoubleReal * kxyz,int i_saveocc,int norm_switch,double * e_qp, double * e_sp, double * n_qp,cufftHandle plan_ev,cufftDoubleComplex *fft3_ev,cufftDoubleReal *xyz,cufftDoubleReal *rcm,double * lz_qp);
 void check_densities(double * copy_from,Densities * dens , const int nxyz , char * iso_label );
 void define_VF_gpu(cufftDoubleReal *avf,cufftDoubleReal *xyz, int nxyz,int isospin);
 cufftDoubleReal gaussian_(cufftDoubleReal t,cufftDoubleReal t0,cufftDoubleReal sigma,cufftDoubleReal c0) ;
@@ -542,7 +542,11 @@ int main( int argc , char ** argv )
   // b: impact parameter.
   double ecm=0.,b=0.;
 
-  while ((p=getopt(argc,argv,"g:s:d:a:c:t:e:i:f:v:b:x:"))!=-1) {
+  // New variables related to normalization.
+  int norm_switch = 0; // If this variable is one then we normalize the wfs.
+  int i_norm = 10000000; // Number of time steps between normalizations.
+
+  while ((p=getopt(argc,argv,"g:s:d:a:c:t:e:i:f:v:b:x:n:"))!=-1) {
     switch(p){
     case 'g': gpupernode=atoi(optarg);break; 
     case 's': total_time_steps=atoi(optarg);break;
@@ -558,6 +562,7 @@ int main( int argc , char ** argv )
     case 'v': ecm=atof(optarg);break;
     case 'b': b=atof(optarg);break;
 #endif
+    case 'n': i_norm=atoi(optarg);break;
     }
   }
 
@@ -1640,9 +1645,17 @@ if(icub==1)
       
       // now need to calculate the time derivatives of \psi(t+dt)
       if ( gr_ip != 0 )
-	{ 
+	{
+          if(timeloop % i_norm == 0)
+          {
+            norm_switch = 1;
+          }
+          else
+          {
+            norm_switch = 0;
+          } 
 	  //GPU
-	  adams_bashforth_dfdt_gpu(nxyz,nwfip,d_wavf+nn_time*nwfip*4*nxyz,d_wavf_td+mm_time*nwfip*4*nxyz,d_grad,d_lapl,d_plan_b,d_plan_r,d_potentials,batch,d_kxyz,i_saveocc,e_qp,e_sp,n_qp,d_plan_ev,d_fft3_ev,d_xyz,d_rcm,lz_qp);
+	  adams_bashforth_dfdt_gpu(nxyz,nwfip,d_wavf+nn_time*nwfip*4*nxyz,d_wavf_td+mm_time*nwfip*4*nxyz,d_grad,d_lapl,d_plan_b,d_plan_r,d_potentials,batch,d_kxyz,i_saveocc,norm_switch,e_qp,e_sp,n_qp,d_plan_ev,d_fft3_ev,d_xyz,d_rcm,lz_qp);
 	}
 
 #ifdef LZCALC
@@ -2059,7 +2072,15 @@ if(icub==1)
 #ifdef BENCHMARK                  	    
 	    b_it(&itgtod,&it_clk);
 #endif
-	    adams_bashforth_dfdt_gpu(nxyz,nwfip,d_wavf+nn_time*nwfip*4*nxyz,d_wavf_td+mm_time*nwfip*4*nxyz,d_grad,d_lapl,d_plan_b,d_plan_r,d_potentials,batch,d_kxyz,i_saveocc,e_qp,e_sp,n_qp,d_plan_ev,d_fft3_ev,d_xyz,d_rcm,lz_qp);
+          if(timeloop % i_norm == 0)
+          {
+            norm_switch = 1;
+          }
+          else
+          {
+            norm_switch = 0;
+          }
+	    adams_bashforth_dfdt_gpu(nxyz,nwfip,d_wavf+nn_time*nwfip*4*nxyz,d_wavf_td+mm_time*nwfip*4*nxyz,d_grad,d_lapl,d_plan_b,d_plan_r,d_potentials,batch,d_kxyz,i_saveocc,norm_switch,e_qp,e_sp,n_qp,d_plan_ev,d_fft3_ev,d_xyz,d_rcm,lz_qp);
 #ifdef BENCHMARK                  	    
 	    abm_tim+=e_it(0,&itgtod,&it_clk);
 #endif

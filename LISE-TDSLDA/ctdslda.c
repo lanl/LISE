@@ -1419,6 +1419,7 @@ if(icub==1)
 	  fd = fopen( file_res , "a+" ) ;
 #else
 	  fd = fopen( file_res , "w" ) ;
+          fprintf("Time E_tot Z N xcm ycm zcm xcm_p ycm_p zcm_p xcm_n ycm_n zcm_n Beta E_flow_tot egs Q20 Q30 Q40 Pair_gap_p Pair_gap_n E_ext E_cm \n");
 #endif
 	}
       

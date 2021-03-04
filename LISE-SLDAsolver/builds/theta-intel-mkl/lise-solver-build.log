@@ -1,0 +1,184 @@
+LISE/LISE-SLDAsolver> module list 
+Currently Loaded Modulefiles:
+  1) modules/3.2.11.4                                 10) gni-headers/5.0.12.0-7.0.2.1_2.19__g3b1768f.ari  19) craype-mic-knl
+  2) intel/19.1.0.166                                 11) xpmem/2.2.20-7.0.2.1_2.60__g87eb960.ari          20) cray-mpich/7.7.14
+  3) craype-network-aries                             12) job/2.2.4-7.0.2.1_2.72__g36b56f4.ari             21) nompirun/nompirun
+  4) craype/2.6.5                                     13) dvs/2.12_2.2.172-7.0.2.1_8.1__g7056cbb6          22) adaptive-routing-a3
+  5) cray-libsci/20.06.1                              14) alps/6.6.59-7.0.2.1_3.65__g872a8d62.ari          23) darshan/3.2.1
+  6) udreg/2.3.2-7.0.2.1_2.33__g8175d3d.ari           15) rca/2.2.20-7.0.2.1_2.78__g8e3fb5b.ari            24) xalt
+  7) ugni/6.0.14.0-7.0.2.1_3.60__ge78e5b0.ari         16) atp/3.8.1                                        25) cray-fftw/3.3.8.6
+  8) pmi/5.0.16                                       17) perftools-base/20.06.0
+  9) dmapp/7.1.1-7.0.2.1_2.78__g38cf134.ari           18) PrgEnv-intel/6.0.7
+LISE/LISE-SLDAsolver> module unload darshan
+LISE/LISE-SLDAsolver> module unload cray-libsci
+LISE/LISE-SLDAsolver> module load cray-fftw/3.3.8.6
+LISE/LISE-SLDAsolver> module list -t
+Currently Loaded Modulefiles:
+modules/3.2.11.4
+intel/19.1.0.166
+craype-network-aries
+craype/2.6.5
+udreg/2.3.2-7.0.2.1_2.33__g8175d3d.ari
+ugni/6.0.14.0-7.0.2.1_3.60__ge78e5b0.ari
+pmi/5.0.16
+dmapp/7.1.1-7.0.2.1_2.78__g38cf134.ari
+gni-headers/5.0.12.0-7.0.2.1_2.19__g3b1768f.ari
+xpmem/2.2.20-7.0.2.1_2.60__g87eb960.ari
+job/2.2.4-7.0.2.1_2.72__g36b56f4.ari
+dvs/2.12_2.2.172-7.0.2.1_8.1__g7056cbb6
+alps/6.6.59-7.0.2.1_3.65__g872a8d62.ari
+rca/2.2.20-7.0.2.1_2.78__g8e3fb5b.ari
+atp/3.8.1
+perftools-base/20.06.0
+PrgEnv-intel/6.0.7
+craype-mic-knl
+cray-mpich/7.7.14
+nompirun/nompirun
+adaptive-routing-a3
+xalt
+cray-fftw/3.3.8.6
+LISE/LISE-SLDAsolver> export LD_LIBRARY_PATH=${MKLROOT}/lib/intel64:$LD_LIBRARY_PATH
+LISE/LISE-SLDAsolver> export LD_LIBRARY_PATH=/opt/intel/compilers_and_libraries_2020.0.166/linux/compiler/lib/intel64_lin/:$LD_LIBRARY_PATH
+LISE/LISE-SLDAsolver> make clean -f Makefile.theta-intel-mkl 
+rm -f broyden_min.o print_wf.o deform.o get-blcs-dscr.o create_destroy_groups.o system_energy.o external_pot.o pots_io.o cnuclear-slda-solver_pn.o dens_io.o dens_start.o make_potentials.o get-mem-req-blk-cyc.o ham_matrix.o operators.o constr_dens.o axial_symmetry.o 2dbc-slda-mpi-wr.o xlise-static 
+LISE/LISE-SLDAsolver> make -f Makefile.theta-intel-mkl 
+LISE-SLDAsolver> make -f Makefile.theta-intel-mkl 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include broyden_min.c 
+icc -c -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include print_wf.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include deform.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include get-blcs-dscr.c 
+icc -c -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include create_destroy_groups.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include system_energy.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include external_pot.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include pots_io.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include cnuclear-slda-solver_pn.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include dens_io.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include dens_start.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include make_potentials.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include get-mem-req-blk-cyc.c
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include ham_matrix.c 
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include operators.c 
+operators.c(71): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(ix2) \
+  ^
+
+operators.c(82): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(iz2) \
+  ^
+
+operators.c(93): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(iy2) \
+  ^
+
+operators.c(118): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(i)
+  ^
+
+operators.c(258): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(i)
+  ^
+
+operators.c(280): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(ix2) \
+  ^
+
+operators.c(291): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(iz2) \
+  ^
+
+operators.c(302): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(iy2) \
+  ^
+
+operators.c(393): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(ix2) \
+  ^
+
+operators.c(414): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(iz2) \
+  ^
+
+operators.c(435): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(iy2) \
+  ^
+
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include constr_dens.c
+constr_dens.c(87): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(i) 
+  ^
+
+constr_dens.c(463): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(li,ii,lj,j) 
+  ^
+
+constr_dens.c(493): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(i,iu,id,ii) 
+  ^
+
+constr_dens.c(655): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(li,ii,lj,j) 
+  ^
+
+constr_dens.c(683): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(i,iu,id,ii) 
+  ^
+
+constr_dens.c(713): warning #3180: unrecognized OpenMP #pragma
+  #pragma omp parallel for default(shared) private(i,iu,id,ii) 
+  ^
+
+icc -c -I/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/include -I/opt/cray/pe/fftw/3.3.8.6/mic_knl/include -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include axial_symmetry.c 
+icc -c -I/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/include 2dbc-slda-mpi-wr.c
+icc -o xlise-static broyden_min.o print_wf.o deform.o get-blcs-dscr.o create_destroy_groups.o system_energy.o external_pot.o pots_io.o cnuclear-slda-solver_pn.o dens_io.o dens_start.o make_potentials.o get-mem-req-blk-cyc.o ham_matrix.o operators.o constr_dens.o axial_symmetry.o 2dbc-slda-mpi-wr.o -L/opt/cray/pe/fftw/3.3.8.6/mic_knl/lib -lfftw3 -L/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/lib/intel64 -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_sequential -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -lm -ldl  -lm -L/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0/lib -lmpich_intel 
+LISE/LISE-SLDAsolver> 
+LISE/LISE-SLDAsolver> ls -lstr 
+total 1684
+   4530 Feb 22 09:49 vars_nuclear.h
+   2576 Feb 22 09:49 README.txt
+   5845 Feb 22 09:49 print_wf.c
+   3946 Feb 22 09:49 Makefile.summit-ibmxl-essl
+   2248 Feb 22 09:49 LICENSE
+   5656 Feb 22 09:49 external_pot.c
+   3771 Feb 22 09:49 deform.c
+   2279 Feb 22 09:49 create_destroy_groups.c
+   9466 Feb 22 09:49 2dbc-slda-mpi-wr.c
+   7688 Feb 22 09:49 system_energy.c
+  16333 Feb 22 09:49 operators.c
+   3378 Feb 22 09:49 Makefile.summit-gcc-ref
+   2739 Feb 22 09:49 Makefile
+  17161 Feb 22 09:49 ham_matrix.c
+  25119 Feb 22 09:49 constr_dens.c
+   4096 Feb 22 09:49 builds
+   8176 Feb 22 09:49 axial_symmetry.c
+   7845 Feb 22 09:49 pots_io.c
+  27846 Feb 22 09:49 make_potentials.c
+   3946 Feb 22 09:49 Makefile.summit-ibmxl-ref
+   1921 Feb 22 09:49 get-mem-req-blk-cyc.c
+   2515 Feb 22 09:49 get-blcs-dscr.c
+   3484 Feb 22 09:49 dens_start.c
+  22962 Feb 22 09:49 dens_io.c
+  52009 Feb 25 09:08 cnuclear-slda-solver_pn.c
+   4596 Feb 25 09:10 Makefile.theta-intel-cray
+   5533 Feb 26 08:23 Makefile.theta-intel-mkl
+  21510 Feb 26 08:35 broyden_min.c
+   8190 Feb 26 09:19 solver_build-theta_intel_mkl.log
+   9688 Feb 26 09:19 print_wf.o
+   2752 Feb 26 09:19 get-blcs-dscr.o
+   8400 Feb 26 09:19 deform.o
+  35400 Feb 26 09:19 broyden_min.o
+   9808 Feb 26 09:19 system_energy.o
+   3968 Feb 26 09:19 create_destroy_groups.o
+   8800 Feb 26 09:19 pots_io.o
+  15072 Feb 26 09:19 external_pot.o
+  26424 Feb 26 09:19 dens_io.o
+  75344 Feb 26 09:19 cnuclear-slda-solver_pn.o
+  50360 Feb 26 09:19 make_potentials.o
+  14488 Feb 26 09:19 dens_start.o
+  26560 Feb 26 09:19 ham_matrix.o
+   1568 Feb 26 09:19 get-mem-req-blk-cyc.o
+  27824 Feb 26 09:19 operators.o
+  47208 Feb 26 09:19 constr_dens.o
+  22520 Feb 26 09:19 axial_symmetry.o
+  11296 Feb 26 09:19 2dbc-slda-mpi-wr.o
+1046344 Feb 26 09:19 xlise-static
+LISE-SLDAsolver>

@@ -303,8 +303,6 @@ void make_localization (double complex *boost_field, const int n, Lattice_arrays
 
 void do_boost_wf(cufftDoubleComplex * boost_field, cufftDoubleComplex * wavf ,int dim);
 
-void do_boost_wf2(cufftDoubleComplex * boost_field, cufftDoubleComplex * wavf ,int dim);
-
 int read_qpe(char *fn, cufftDoubleReal * e_qp, const MPI_Comm comm, const int iam, const int nwf);
   
 void tstep_gpu(const int nxyz , const int nwfip , const int mxp, const int n0_time, const int nn_time, cufftDoubleComplex * wavf, cufftDoubleComplex * wavf_psi, cufftDoubleComplex * wavf_hpsi, cufftDoubleComplex * wavf_mxp, cufftDoubleReal * coeffs, cufftDoubleComplex * grad, cufftDoubleComplex * lapl, cufftDoubleComplex * wfft, cufftDoubleComplex * fft3 , cufftHandle plan_b , cufftHandle plan_r , cufftDoubleReal * potentials, cufftDoubleReal * avf, const int batch, cufftDoubleReal * kxyz, cufftHandle plan_ev, cufftDoubleComplex * fft3_ev, cufftDoubleReal *xyz, cufftDoubleReal *rcm );
@@ -388,9 +386,6 @@ void generate_plane_wave_wfs( double complex ** wf , const int nxyz , const int 
 
 int parse_input_file( char * dir_in , int * nx , int * ny , int * nz , int * nwf_p , int * nwf_n , double * amu_p , double * amu_n , double * dx , double * dy , double * dz , double * e_cut , double * cc_constr , const int ip , const MPI_Comm comm );
 ////////////////////////////////
-
-
-
 
 int main( int argc , char ** argv )
 {
@@ -546,7 +541,7 @@ int main( int argc , char ** argv )
   int norm_switch = 0; // If this variable is one then we normalize the wfs.
   int i_norm = 10000000; // Number of time steps between normalizations.
 
-  while ((p=getopt(argc,argv,"g:s:d:a:c:t:e:i:f:v:b:x:n:"))!=-1) {
+  while ((p=getopt(argc,argv,"g:s:d:a:c:t:e:i:f:v:b:x:m:n:p:"))!=-1) {
     switch(p){
     case 'g': gpupernode=atoi(optarg);break; 
     case 's': total_time_steps=atoi(optarg);break;
@@ -562,7 +557,9 @@ int main( int argc , char ** argv )
     case 'v': ecm=atof(optarg);break;
     case 'b': b=atof(optarg);break;
 #endif
+    case 'm': mxp=atoi(optarg);break; 
     case 'n': i_norm=atoi(optarg);break;
+    case 'p': time_bootstrap=atoi(optarg);break;
     }
   }
 
@@ -1419,7 +1416,7 @@ if(icub==1)
 	  fd = fopen( file_res , "a+" ) ;
 #else
 	  fd = fopen( file_res , "w" ) ;
-          fprintf("Time E_tot Z N xcm ycm zcm xcm_p ycm_p zcm_p xcm_n ycm_n zcm_n Beta E_flow_tot egs Q20 Q30 Q40 Pair_gap_p Pair_gap_n E_ext E_cm \n");
+          fprintf(fd,"Time E_tot Z N xcm ycm zcm xcm_p ycm_p zcm_p xcm_n ycm_n zcm_n Beta E_flow_tot egs Q20 Q30 Q40 Pair_gap_p Pair_gap_n E_ext E_cm \n");
 #endif
 	}
       

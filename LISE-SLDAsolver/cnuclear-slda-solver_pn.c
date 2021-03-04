@@ -37,6 +37,16 @@ void make_ham( double complex * , double * , double * , double * , double comple
 
 void get_blcs_dscr( MPI_Comm , int , int , int , int , int , int , int * , int * , int * , int * , int * ) ;
 
+//Summit, use IBM's build of Netlib ScaLAPACK
+void pzheevd( char * , char * , int * , double complex * , int * , int * , int * , double * , double complex * , int * , int * , int * , double complex * , int *, double * , int * , int * , int * , int * );
+
+//Intel MKL
+//#include <mkl.h>
+//#include <mkl_scalapack.h>
+//#include <mkl_blacs.h>
+//#include <mkl_pblas.h>
+//void  pzheevd(const char* jobz, const char* uplo, const MKL_INT* n, const MKL_Complex16* a, const MKL_INT* ia, const MKL_INT* ja, const MKL_INT* desca, double* w, MKL_Complex16* z, const MKL_INT* iz, const MKL_INT* jz, const MKL_INT* descz, MKL_Complex16* work, const MKL_INT* lwork, double* rwork, const MKL_INT* lrwork, MKL_INT* iwork, const MKL_INT* liwork, MKL_INT* info);
+
 int dens_func_params( const int , const int , const int , Couplings * , const int , int icub) ;
 
 void generate_ke_1d( double * , const int , const double , const int ) ;
@@ -50,6 +60,8 @@ void allocate_pots( Potentials * , const double , double * , const int , const i
 void allocate_dens( Densities * , const int , const int , const int ) ;
 
 void make_coordinates( const int , const int , const int , const int , const double , const double , const double , Lattice_arrays * ) ;
+
+void  match_lattices( Lattice_arrays *latt , Lattice_arrays * latt3 , const int nx , const int ny , const int nz , const int nx3 , const int ny3 , const int nz3 , FFtransf_vars * fftrans , const double Lc ) ;
 
 void external_so_m( double * , double * , double * , double * , double * , const double , Lattice_arrays * , const MPI_Comm , double complex * , double complex * , double complex * , const int , const int , const int ) ;
 
@@ -295,7 +307,8 @@ int main( int argc , char ** argv )
 
   double complex * work , tw[ 2 ] ;
 
-  double complex * rwork , tw_[2] ;
+  double * rwork , tw_[2] ;
+  //double complex * rwork , tw_[2] ;
 
   double * occ , amu_n , * amu , const_amu=4.e-2,c_q2=1.e-5 ;
 
@@ -1291,6 +1304,9 @@ int main( int argc , char ** argv )
 
       assert( iwork = malloc( liwork * sizeof( int ) ) ) ;
 
+      // gcc
+      // pzheevd_( "V" , "L" , &na , ham , &Ione , &Ione , descr_h , lam , z_eig , &Ione , &Ione , descr_h , tw , &lwork , tw_ , &lrwork , iwork , &liwork , &info ) ;
+      // ibm xl
       pzheevd( "V" , "L" , &na , ham , &Ione , &Ione , descr_h , lam , z_eig , &Ione , &Ione , descr_h , tw , &lwork , tw_ , &lrwork , iwork , &liwork , &info ) ;
 
       liwork = iwork[ 0 ] ;
@@ -1307,6 +1323,9 @@ int main( int argc , char ** argv )
 
       assert( rwork = malloc( lrwork * sizeof( double complex ) ) ) ;
 
+      // gcc
+      // pzheevd_( "V" , "L" , &na , ham , &Ione , &Ione , descr_h , lam , z_eig , &Ione , &Ione , descr_h , work , &lwork , rwork , &lrwork , iwork , &liwork , &info ) ;
+      // ibm xl
       pzheevd( "V" , "L" , &na , ham , &Ione , &Ione , descr_h , lam , z_eig , &Ione , &Ione , descr_h , work , &lwork , rwork , &lrwork , iwork , &liwork , &info ) ;
 
       free( iwork ) ; free( work ) ; free( rwork ) ;

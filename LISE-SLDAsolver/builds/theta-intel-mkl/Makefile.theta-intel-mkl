@@ -1,0 +1,135 @@
+#
+# Parameters for compiling LISE solver:
+#
+# CC 			-the C compiler command
+# LISE_LA_INC	-the path to resolve header files for 'blas.h' (or equivalent)
+# LISE_LA_LNK	-the link line for ScaLAPACK and dependencies
+# LISE_FFTW_INC		-the path to resolve header files for 'fftw.h' 
+# LISE_FFTW_LNK		-the link line for FFTW 
+# LISE_MPI_INC		-the path to resolve 'mpi.h' header file
+# LISE_MPI_LNK		-the link line for MPI 
+#
+# theta.alcf.anl.gov: Cray XC40
+#
+# compiler: Intel (icc (ICC) 19.1.0.166 20191121)
+# operating system: craype/2.6.5 
+# MPI: MPICH (cray-mpich/7.7.14) 
+# ScaLAPACK: Intel Math Kernel Library (MKL) (mkl-devel-2020.0-intel_166)
+# BLAS: Intel MKL (mkl-devel-2020.0-intel_166)
+# FFTW: FFTW 3.3.8 (cray-fftw/3.3.8.6) 
+#
+# NOTE: 
+# 	It is recommended that Darshan, a default, automated I/O profiler, be excluded from building and running LISE codes:
+# 	module unload darshan
+#
+# Modules:
+# modules/3.2.11.4
+# intel/19.1.0.166
+# craype-network-aries
+# craype/2.6.5
+# udreg/2.3.2-7.0.2.1_2.33__g8175d3d.ari
+# ugni/6.0.14.0-7.0.2.1_3.60__ge78e5b0.ari
+# pmi/5.0.16
+# dmapp/7.1.1-7.0.2.1_2.78__g38cf134.ari
+# gni-headers/5.0.12.0-7.0.2.1_2.19__g3b1768f.ari
+# xpmem/2.2.20-7.0.2.1_2.60__g87eb960.ari
+# job/2.2.4-7.0.2.1_2.72__g36b56f4.ari
+# dvs/2.12_2.2.172-7.0.2.1_8.1__g7056cbb6
+# alps/6.6.59-7.0.2.1_3.65__g872a8d62.ari
+# rca/2.2.20-7.0.2.1_2.78__g8e3fb5b.ari
+# atp/3.8.1
+# perftools-base/20.06.0
+# PrgEnv-intel/6.0.7
+# craype-mic-knl
+# cray-mpich/7.7.14
+# nompirun/nompirun
+# adaptive-routing-a3
+# xalt
+# cray-fftw/3.3.8.6`
+#
+# Environment variables on theta for this build:
+# 
+# FFTW_ROOT=/opt/cray/pe/fftw/3.3.8.6/mic_knl
+# MKLROOT=/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl
+# CRAY_MPICH2_DIR=/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0
+#
+# export LD_LIBRARY_PATH=${MKLROOT}/lib/intel64:$LD_LIBRARY_PATH
+# export LD_LIBRARY_PATH=/opt/intel/compilers_and_libraries_2020.0.166/linux/compiler/lib/intel64_lin/:$LD_LIBRARY_PATH
+#
+# ref. Intel MKL Link Line Advisor, https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl/link-line-advisor.html 
+#
+# static build:
+# /opt/intel/mkl/lib/intel64/libmkl_scalapack_lp64.a -L/opt/intel/mkl/lib/intel64 -Wl,--start-group /opt/intel/mkl/lib/intel64/libmkl_intel_lp64.a /opt/intel/mkl/lib/intel64/libmkl_core.a /opt/intel/mkl/lib/intel64/libmkl_sequential.a -Wl,--end-group /opt/intel/mkl/lib/intel64/libmkl_blacs_intelmpi_lp64.a -lpthread -lm -ldl
+#
+#
+
+CC=icc
+CFLAGS=
+
+LISE_LA_INC=-I${MKLROOT}/include
+LISE_LA_LNK=-L${MKLROOT}/lib/intel64 -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_sequential -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -lm -ldl 
+
+LISE_FFTW_INC=-I${FFTW_ROOT}/include
+LISE_FFTW_LNK=-L${FFTW_ROOT}/lib -lfftw3
+LISE_MPI_INC=-I${CRAY_MPICH2_DIR}/include
+LISE_MPI_LNK=-L${CRAY_MPICH2_DIR}/lib -lmpich_intel
+
+#LISE_LA_ESSL, targets IBM ESSL LAPACK and BLAS
+#LISE_LA_MKL, targets Intel MKL LAPACK and BLAS
+#LISE_LA_REF, targets Netlib reference LAPACK and BLAS:  LAPACKE, CBLAS
+LA=LISE_LA_MKL
+
+LINK= $(LISE_FFTW_LNK) $(LISE_LA_LNK) -lm $(LISE_CUDA_LNK) $(LISE_MPI_LNK)
+
+EXE = xlise-static
+
+OBJS = broyden_min.o print_wf.o deform.o \
+	get-blcs-dscr.o create_destroy_groups.o system_energy.o external_pot.o \
+	pots_io.o cnuclear-slda-solver_pn.o dens_io.o dens_start.o make_potentials.o \
+	get-mem-req-blk-cyc.o ham_matrix.o operators.o constr_dens.o axial_symmetry.o \
+	2dbc-slda-mpi-wr.o
+
+$(EXE): $(OBJS) 
+	$(CC) -o $(EXE) $(OBJS) $(LINK) 
+
+2dbc-slda-mpi-wr.o: 2dbc-slda-mpi-wr.c
+	$(CC) -c $(LISE_MPI_INC) 2dbc-slda-mpi-wr.c
+get-blcs-dscr.o: get-blcs-dscr.c
+	$(CC) -c $(LISE_LA_INC) $(LISE_MPI_INC) get-blcs-dscr.c 
+get-mem-req-blk-cyc.o: get-mem-req-blk-cyc.c
+	$(CC) -c $(LISE_LA_INC) $(LISE_MPI_INC) get-mem-req-blk-cyc.c
+ham_matrix.o: ham_matrix.c vars_nuclear.h 
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) ham_matrix.c 
+pots_io.o: pots_io.c vars_nuclear.h
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) pots_io.c 
+constr_dens.o: constr_dens.c vars_nuclear.h 
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) constr_dens.c
+operators.o: operators.c vars_nuclear.h
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) operators.c 
+cnuclear-slda-solver_pn.o: cnuclear-slda-solver_pn.c vars_nuclear.h 
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) cnuclear-slda-solver_pn.c 
+external_pot.o: external_pot.c vars_nuclear.h 
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) external_pot.c 
+dens_start.o: dens_start.c vars_nuclear.h
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) dens_start.c 
+make_potentials.o: make_potentials.c vars_nuclear.h 
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) make_potentials.c 
+dens_io.o: dens_io.c vars_nuclear.h
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) dens_io.c 
+system_energy.o: system_energy.c vars_nuclear.h
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) system_energy.c 
+deform.o: deform.c vars_nuclear.h 
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) deform.c 
+broyden_min.o: broyden_min.c
+	$(CC) -c $(LISE_LA_INC) -D$(LA) broyden_min.c 
+print_wf.o: print_wf.c vars_nuclear.h
+	$(CC) -c $(LISE_MPI_INC) $(LISE_FFTW_INC) print_wf.c 
+create_destroy_groups.o: create_destroy_groups.c
+	$(CC) -c $(LISE_MPI_INC) create_destroy_groups.c 
+axial_symmetry.o: axial_symmetry.c vars_nuclear.h
+	$(CC) -c $(LISE_LA_INC) $(LISE_FFTW_INC) $(LISE_MPI_INC) axial_symmetry.c 
+
+.PHONY : clean
+clean:
+	rm -f $(OBJS) $(EXE) $(COBSJ)
+

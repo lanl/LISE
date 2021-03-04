@@ -1,0 +1,105 @@
+#
+# LISE software variables that must be set:
+#
+#
+# LA 			-variable to influence the target implementation, default is 'LA=LISE_LA_ESSL'
+# 			LISE_LA_ESSL, targets IBM ESSL LAPACK and BLAS
+# 			LISE_LA_MKL, targets Intel MKL LAPACK and BLAS
+# 			LISE_LA_REF, targets Netlib reference LAPACK and BLAS:  LAPACKE, CBLAS
+#
+# Parameters for compiling LISE solver.
+#
+# CC			-C compiler command
+# LISE_LA_INC   	-path to resolve header files for ScaLAPACK and dependencies
+# LISE_LA_LNK   	-link line for ScaLAPACK and dependencies
+# LISE_FFTW_INC 	-path to resolve header files for 'fftw.h' 
+# LISE_FFTW_LNK 	-link line for FFTW 
+# LISE_MPI_INC  	-path to resolve 'mpi.h' header file
+# LISE_MPI_LNK  	-link line for MPI 
+#
+# Parameters for compiling LISE time-dependent.
+#
+# CC			-C compiler command
+# LISE_LAS_INC   	-path to resolve header files for LAPACK and dependencies
+# LISE_LAS_LNK   	-link line for LAPACK and dependencies
+# LISE_FFTW_INC 	-path to resolve header files for 'fftw.h' 
+# LISE_FFTW_LNK 	-link line for FFTW 
+# LISE_MPI_INC  	-path to resolve 'mpi.h' header file
+# LISE_MPI_LNK  	-link line for MPI 
+# NCC                  	-NVIDIA CUDA compiler driver command, 'nvcc'
+# NCC_SM		-CUDA SM architecture, i.e. '--gpu-architecture=sm_70'
+# LISE_CUFFT_INC        -path to resolve CUDA FFT header file 'cufft.h'
+# LISE_CUFFT_LIB        -link line for CUDA FFT
+# LISE_CUDA_INC         -path to the CUDA Toolkit header files
+# LISE_CUDA_LIB         -link line for the CUDA runtime library
+#
+# 'theta.alcf.anl.gov' - a Cray XC40
+# 
+# NOTE: special permission is required to use 'thetagpu'.
+#
+# Modules:
+# modules/3.2.11.4
+# intel/19.1.0.166
+# craype-network-aries
+# craype/2.6.5
+# udreg/2.3.2-7.0.2.1_2.33__g8175d3d.ari
+# ugni/6.0.14.0-7.0.2.1_3.60__ge78e5b0.ari
+# pmi/5.0.16
+# dmapp/7.1.1-7.0.2.1_2.78__g38cf134.ari
+# gni-headers/5.0.12.0-7.0.2.1_2.19__g3b1768f.ari
+# xpmem/2.2.20-7.0.2.1_2.60__g87eb960.ari
+# job/2.2.4-7.0.2.1_2.72__g36b56f4.ari
+# dvs/2.12_2.2.172-7.0.2.1_8.1__g7056cbb6
+# alps/6.6.59-7.0.2.1_3.65__g872a8d62.ari
+# rca/2.2.20-7.0.2.1_2.78__g8e3fb5b.ari
+# atp/3.8.1
+# perftools-base/20.06.0
+# PrgEnv-intel/6.0.7
+# craype-mic-knl
+# cray-mpich/7.7.14
+# nompirun/nompirun
+# adaptive-routing-a3
+# xalt
+# cray-fftw/3.3.8.6
+# cudatoolkit/10.2.89_3.28-7.0.2.0_2.32__g52c0314
+#
+# Environment variables on theta for this build:
+# 
+# FFTW_ROOT=/opt/cray/pe/fftw/3.3.8.6/mic_knl
+# MKLROOT=/opt/intel/compilers_and_libraries_2020.0.166/linux/mkl
+# CRAY_MPICH2_DIR=/opt/cray/pe/mpt/7.7.14/gni/mpich-intel/16.0
+# CRAY_CUDATOOLKIT_POST_LINK_OPTS=-L/opt/nvidia/cudatoolkit10.2/10.2.89_3.28-7.0.2.0_2.32__g52c0314/lib64 -L/opt/nvidia/cudatoolkit10.2/10.2.89_3.28-7.0.2.0_2.32__g52c0314/extras/CUPTI/lib64 -Wl,--as-needed -Wl,-lcupti -Wl,-lcudart -Wl,--no-as-needed -L/opt/cray/nvidia/default/lib64 -lcuda
+# CRAY_CUDATOOLKIT_DIR=/opt/nvidia/cudatoolkit10.2/10.2.89_3.28-7.0.2.0_2.32__g52c0314
+# CRAY_CUDATOOLKIT_INCLUDE_OPTS=-I/opt/nvidia/cudatoolkit10.2/10.2.89_3.28-7.0.2.0_2.32__g52c0314/include -I/opt/nvidia/cudatoolkit10.2/10.2.89_3.28-7.0.2.0_2.32__g52c0314/extras/CUPTI/include -I/opt/nvidia/cudatoolkit10.2/10.2.89_3.28-7.0.2.0_2.32__g52c0314/extras/Debugger/include
+# CUDATOOLKIT_HOME=/opt/nvidia/cudatoolkit10.2/10.2.89_3.28-7.0.2.0_2.32__g52c0314
+# CRAY_CUDATOOLKIT_VERSION=10.2.89_3.28-7.0.2.0_2.32__g52c0314
+#
+#
+# export LD_LIBRARY_PATH=${MKLROOT}/lib/intel64:$LD_LIBRARY_PATH
+# export LD_LIBRARY_PATH=/opt/intel/compilers_and_libraries_2020.0.166/linux/compiler/lib/intel64_lin/:$LD_LIBRARY_PATH
+#
+# ref. Intel MKL Link Line Advisor, https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl/link-line-advisor.html 
+#
+# static build of static code:
+# /opt/intel/mkl/lib/intel64/libmkl_scalapack_lp64.a -L/opt/intel/mkl/lib/intel64 -Wl,--start-group /opt/intel/mkl/lib/intel64/libmkl_intel_lp64.a /opt/intel/mkl/lib/intel64/libmkl_core.a /opt/intel/mkl/lib/intel64/libmkl_sequential.a -Wl,--end-group /opt/intel/mkl/lib/intel64/libmkl_blacs_intelmpi_lp64.a -lpthread -lm -ldl
+#
+
+CC=icc
+CFLAGS=
+NCC= ${CUDATOOLKIT_HOME}/bin/nvcc
+NCC_SM=--gpu-architecture=sm_80
+LA=LISE_LA_MKL
+LISE_LA_INC=-I${MKLROOT}/include
+LISE_LA_LNK=-L${MKLROOT}/lib/intel64 -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_sequential -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -lm -ldl 
+LISE_LAS_INC=-I${MKLROOT}/include
+LISE_LAS_LNK=-L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_sequential -liomp5 -lpthread -lm -ldl
+LISE_FFTW_INC=-I${FFTW_ROOT}/include
+LISE_FFTW_LNK=-L${FFTW_ROOT}/lib -lfftw3
+LISE_MPI_INC=-I${CRAY_MPICH2_DIR}/include
+LISE_MPI_LNK=-L${CRAY_MPICH2_DIR}/lib -lmpich_intel
+LISE_CUDA_INC=${CRAY_CUDATOOLKIT_INCLUDE_OPTS}
+LISE_CUDA_LNK=${CRAY_CUDATOOLKIT_POST_LINK_OPTS} -lcufft
+
+LISE_VARS = CC NCC NCC_SM LA LISE_LAS_INC LISE_LAS_LNK LISE_FFTW_INC LISE_FFTW_LNK LISE_MPI_INC LISE_MPI_LNK LISE_CUDA_INC LISE_CUDA_LNK LISE_BIN_DIR LISE_LA_INC LISE_LA_LNK
+export $(LISE_VARS)
+

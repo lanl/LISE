@@ -1,0 +1,93 @@
+#
+# LISE software variables that must be set:
+#
+#
+# LA 			-variable to influence the target implementation, default is 'LA=LISE_LA_ESSL'
+# 			LISE_LA_ESSL, targets IBM ESSL LAPACK and BLAS
+# 			LISE_LA_MKL, targets Intel MKL LAPACK and BLAS
+# 			LISE_LA_REF, targets Netlib reference LAPACK and BLAS:  LAPACKE, CBLAS
+#
+# Parameters for compiling LISE solver.
+#
+# CC			-C compiler command
+# LISE_LA_INC   	-path to resolve header files for ScaLAPACK and dependencies
+# LISE_LA_LNK   	-link line for ScaLAPACK and dependencies
+# LISE_FFTW_INC 	-path to resolve header files for 'fftw.h' 
+# LISE_FFTW_LNK 	-link line for FFTW 
+# LISE_MPI_INC  	-path to resolve 'mpi.h' header file
+# LISE_MPI_LNK  	-link line for MPI 
+#
+# Parameters for compiling LISE time-dependent.
+#
+# CC			-C compiler command
+# LISE_LAS_INC   	-path to resolve header files for LAPACK and dependencies
+# LISE_LAS_LNK   	-link line for LAPACK and dependencies
+# LISE_FFTW_INC 	-path to resolve header files for 'fftw.h' 
+# LISE_FFTW_LNK 	-link line for FFTW 
+# LISE_MPI_INC  	-path to resolve 'mpi.h' header file
+# LISE_MPI_LNK  	-link line for MPI 
+# NCC                  	-NVIDIA CUDA compiler driver command, 'nvcc'
+# NCC_SM		-CUDA SM architecture, i.e. '--gpu-architecture=sm_70'
+# LISE_CUFFT_INC        -path to resolve CUDA FFT header file 'cufft.h'
+# LISE_CUFFT_LIB        -link line for CUDA FFT
+# LISE_CUDA_INC         -path to the CUDA Toolkit header files
+# LISE_CUDA_LIB         -link line for the CUDA runtime library
+#
+#
+# Default parameters are set for 'summit.olcf.ornl.gov'.
+#
+# summit.olcf.ornl.gov: IBM AC922 - IBM Power9 + NVIDIA VT100
+#
+# compiler: IBM XL (xl-16.1.1-5)
+# operating system: linux-rhel7-ppc64le
+# ScaLAPACK: Netlib ScaLAPACK 2.0.2 
+# LAPACK / BLAS: IBM ESSL (essl/6.1.0-2)
+# FFTW: FFTW 3.3.8 (fftw/3.3.8) 
+# MPI: IBM Spectrum MPI (spectrum-mpi/10.3.1.2-20200121)
+# CUDA: NVIDIA CUDA 10.1 (cuda/10.1.243), sm_70 
+#
+# NOTE: 
+#       It is recommended that Darshan, a default, automated I/O profiler, be excluded from building and running LISE codes:
+#       module unload darshan-runtime
+#
+# Modules:
+# xl/16.1.1-5
+# spectrum-mpi/10.3.1.2-20200121
+# hsi/5.0.2.p5
+# xalt/1.2.1
+# lsf-tools/2.0
+# DefApps
+# fftw/3.3.8
+# cuda/10.1.243
+# netlib-scalapack/2.0.2
+# essl/6.1.0-2
+#
+# Environment variables:
+#
+# OLCF_ESSL_ROOT                = /sw/summit/essl/6.1.0-2/essl/6.1
+# OLCF_NETLIB_SCALAPACK_ROOT    = /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/netlib-scalapack-2.0.2-xo4jhy4ydnx3qqmnegbzfrvz4am6q2v6
+# OLCF_FFTW_ROOT                = /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/fftw-3.3.8-azzdjlzx2j6dpqvzdir2nwvxypohyfq4
+# MPI_ROOT                      = /autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2
+# CUDA_TOOLKIT_ROOT_DIR		= /sw/summit/cuda/10.1.243
+#
+#
+
+CC=xlc
+CFLAGS=
+NCC= ${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc
+NCC_SM=--gpu-architecture=sm_70
+LA=LISE_LA_ESSL
+LISE_LA_INC=-I${OLCF_ESSL_ROOT}/include
+LISE_LA_LNK=-L${OLCF_NETLIB_SCALAPACK_ROOT}/lib -lscalapack -L${OLCF_ESSL_ROOT}/lib64 -lessl
+LISE_LAS_INC=-I${OLCF_ESSL_ROOT}/include
+LISE_LAS_LNK=-L${OLCF_ESSL_ROOT}/lib64 -lessl
+LISE_FFTW_INC=-I${OLCF_FFTW_ROOT}/include
+LISE_FFTW_LNK=-L${OLCF_FFTW_ROOT}/lib -lfftw3
+LISE_MPI_INC=-I${MPI_ROOT}/include
+LISE_MPI_LNK=-L${MPI_ROOT}/lib -lmpi_ibm
+LISE_CUDA_INC=-I${CUDA_TOOLKIT_ROOT_DIR}/include
+LISE_CUDA_LNK=-L${CUDA_TOOLKIT_ROOT_DIR}/lib64 -lcufft -lcudart
+
+LISE_VARS = CC NCC NCC_SM LA LISE_LAS_INC LISE_LAS_LNK LISE_FFTW_INC LISE_FFTW_LNK LISE_MPI_INC LISE_MPI_LNK LISE_CUDA_INC LISE_CUDA_LNK LISE_BIN_DIR LISE_LA_INC LISE_LA_LNK
+export $(LISE_VARS)
+

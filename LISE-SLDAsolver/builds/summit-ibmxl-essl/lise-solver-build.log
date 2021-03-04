@@ -1,0 +1,85 @@
+[roche@login4.summit LISE-SLDAsolver]$ date ; pwd ; module -t list 
+Sun Feb 21 23:00:00 EST 2021
+/gpfs/alpine/scratch/roche/nph126/kr-feb2021-LISE-test/LISE/LISE-SLDAsolver
+xl/16.1.1-5
+spectrum-mpi/10.3.1.2-20200121
+hsi/5.0.2.p5
+xalt/1.2.1
+lsf-tools/2.0
+DefApps
+essl/6.1.0-2
+fftw/3.3.8
+netlib-scalapack/2.0.2
+[roche@login4.summit LISE-SLDAsolver]$ ls 
+2dbc-slda-mpi-wr.c          Makefile.summit-ibmxl-ref  constr_dens.c            external_pot.c         operators.c
+LICENSE                     README.txt                 create_destroy_groups.c  get-blcs-dscr.c        pots_io.c
+Makefile                    axial_symmetry.c           deform.c                 get-mem-req-blk-cyc.c  print_wf.c
+Makefile.summit-gcc-ref     broyden_min.c              dens_io.c                ham_matrix.c           system_energy.c
+Makefile.summit-ibmxl-essl  cnuclear-slda-solver_pn.c  dens_start.c             make_potentials.c      vars_nuclear.h
+[roche@login4.summit LISE-SLDAsolver]$ make -f Makefile.summit-ibmxl-essl 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include broyden_min.c 
+xlc -c -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include print_wf.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include deform.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include get-blcs-dscr.c 
+xlc -c -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include create_destroy_groups.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include system_energy.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include external_pot.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include pots_io.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include cnuclear-slda-solver_pn.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include dens_io.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include dens_start.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include make_potentials.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include get-mem-req-blk-cyc.c
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include ham_matrix.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include operators.c 
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include constr_dens.c
+xlc -c -I/sw/summit/essl/6.1.0-2/essl/6.1/include -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include axial_symmetry.c 
+xlc -c -I/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/include 2dbc-slda-mpi-wr.c
+xlc -o xlise-static broyden_min.o print_wf.o deform.o get-blcs-dscr.o create_destroy_groups.o system_energy.o external_pot.o pots_io.o cnuclear-slda-solver_pn.o dens_io.o dens_start.o make_potentials.o get-mem-req-blk-cyc.o ham_matrix.o operators.o constr_dens.o axial_symmetry.o 2dbc-slda-mpi-wr.o -L/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/fftw-3.3.8-azzdjlzx2j6dpqvzdir2nwvxypohyfq4/lib -lfftw3 -L/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/netlib-scalapack-2.0.2-xo4jhy4ydnx3qqmnegbzfrvz4am6q2v6/lib -lscalapack -L/sw/summit/essl/6.1.0-2/essl/6.1/lib64 -lessl -lm -L/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/xl-16.1.1-5/spectrum-mpi-10.3.1.2-20200121-p6nrnt6vtvkn356wqg6f74n6jspnpjd2/lib -lmpi_ibm 
+[roche@login4.summit LISE-SLDAsolver]$ ls -lstr 
+total 342
+16 -rw-rw-r-- 1 roche roche   9466 Feb 15 14:49 2dbc-slda-mpi-wr.c
+ 1 -rw-rw-r-- 1 roche roche   2248 Feb 15 14:49 LICENSE
+16 -rw-rw-r-- 1 roche roche   8176 Feb 15 14:49 axial_symmetry.c
+32 -rw-rw-r-- 1 roche roche  25119 Feb 15 14:49 constr_dens.c
+ 1 -rw-rw-r-- 1 roche roche   2279 Feb 15 14:49 create_destroy_groups.c
+ 1 -rw-rw-r-- 1 roche roche   3771 Feb 15 14:49 deform.c
+ 1 -rw-rw-r-- 1 roche roche   3484 Feb 15 14:49 dens_start.c
+16 -rw-rw-r-- 1 roche roche   5656 Feb 15 14:49 external_pot.c
+ 1 -rw-rw-r-- 1 roche roche   2515 Feb 15 14:49 get-blcs-dscr.c
+ 1 -rw-rw-r-- 1 roche roche   1921 Feb 15 14:49 get-mem-req-blk-cyc.c
+32 -rw-rw-r-- 1 roche roche  17161 Feb 15 14:49 ham_matrix.c
+32 -rw-rw-r-- 1 roche roche  27846 Feb 15 14:49 make_potentials.c
+16 -rw-rw-r-- 1 roche roche  16333 Feb 15 14:49 operators.c
+16 -rw-rw-r-- 1 roche roche   7845 Feb 15 14:49 pots_io.c
+16 -rw-rw-r-- 1 roche roche   5845 Feb 15 14:49 print_wf.c
+16 -rw-rw-r-- 1 roche roche   7688 Feb 15 14:49 system_energy.c
+16 -rw-rw-r-- 1 roche roche   4530 Feb 15 14:49 vars_nuclear.h
+ 1 -rw-rw-r-- 1 roche roche   2739 Feb 15 14:53 Makefile
+ 1 -rw-rw-r-- 1 roche roche   3378 Feb 15 17:08 Makefile.summit-gcc-ref
+ 1 -rw-rw-r-- 1 roche roche   2576 Feb 15 17:35 README.txt
+32 -rw-rw-r-- 1 roche roche  22962 Feb 21 04:24 dens_io.c
+64 -rw-rw-r-- 1 roche roche  52009 Feb 21 05:34 cnuclear-slda-solver_pn.c
+ 1 -rw-rw-r-- 1 roche roche   3694 Feb 21 21:01 Makefile.summit-ibmxl-ref
+ 1 -rw-rw-r-- 1 roche roche   3592 Feb 21 21:30 Makefile.summit-ibmxl-essl
+16 -rw-rw-r-- 1 roche roche  11921 Feb 21 22:53 broyden_min.c
+ 0 -rw-rw-r-- 1 roche roche  14208 Feb 21 23:00 broyden_min.o
+ 0 -rw-rw-r-- 1 roche roche   9280 Feb 21 23:00 print_wf.o
+ 0 -rw-rw-r-- 1 roche roche   6672 Feb 21 23:00 deform.o
+ 0 -rw-rw-r-- 1 roche roche   4192 Feb 21 23:00 get-blcs-dscr.o
+ 0 -rw-rw-r-- 1 roche roche   5184 Feb 21 23:00 create_destroy_groups.o
+ 0 -rw-rw-r-- 1 roche roche  11552 Feb 21 23:00 system_energy.o
+ 0 -rw-rw-r-- 1 roche roche   9408 Feb 21 23:00 external_pot.o
+ 0 -rw-rw-r-- 1 roche roche   9360 Feb 21 23:00 pots_io.o
+ 0 -rw-rw-r-- 1 roche roche  49408 Feb 21 23:00 cnuclear-slda-solver_pn.o
+ 0 -rw-rw-r-- 1 roche roche  26912 Feb 21 23:00 dens_io.o
+ 0 -rw-rw-r-- 1 roche roche   7424 Feb 21 23:00 dens_start.o
+ 0 -rw-rw-r-- 1 roche roche  28896 Feb 21 23:00 make_potentials.o
+ 1 -rw-rw-r-- 1 roche roche   3392 Feb 21 23:00 get-mem-req-blk-cyc.o
+ 0 -rw-rw-r-- 1 roche roche  19696 Feb 21 23:00 ham_matrix.o
+ 0 -rw-rw-r-- 1 roche roche  25776 Feb 21 23:00 operators.o
+ 0 -rw-rw-r-- 1 roche roche  37632 Feb 21 23:00 constr_dens.o
+ 0 -rw-rw-r-- 1 roche roche  12944 Feb 21 23:00 axial_symmetry.o
+ 0 -rw-rw-r-- 1 roche roche   9968 Feb 21 23:00 2dbc-slda-mpi-wr.o
+ 0 -rwxrwxr-x 1 roche roche 218576 Feb 21 23:00 xlise-static
+[roche@login4.summit LISE-SLDAsolver]$ 

@@ -2047,37 +2047,6 @@ __global__ void boost_wf(cufftDoubleComplex * boost_field ,  cufftDoubleComplex 
 
 }
 
-__global__ void boost_wf2(cufftDoubleComplex * boost_field ,  cufftDoubleComplex * wavf , int dim )
-{
-
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
-  cufftDoubleComplex w;
-  cufftDoubleReal tmp, phase;
-  int iwf, ixyz;
-  if ( idx < dim )
-    {
-      int i = idx % d_nxyz;   // i < nxyz
-
-      iwf = idx / (4*d_nxyz);   // iwf < nwfip
-      
-      ixyz = idx - iwf*(4*d_nxyz);  // ixyz < 4*nxyz
-
-      if (ixyz < 2*d_nxyz){ // u - component
-	tmp = sqrt(cplxNorm2(wavf[idx]));
-	w = cplxScale(cplxExpi(phase* (cufftDoubleReal) 0.8), tmp);
-      }
-      else{  // v - component
-	tmp = sqrt(cplxNorm2(wavf[idx]));
-	phase = cplxArg(wavf[idx]);
-	w = cplxScale(cplxExpi(phase* (cufftDoubleReal) 0.8), tmp);
-      }
-      wavf[idx] = w;
-
-    }
-
-}
-
-
 template <unsigned int blockSize>
 __device__ void warpReduce(volatile cufftDoubleReal * sdata, unsigned int tid) 
 {// extended to block size 64 for warp case --factors of two here 
@@ -3168,16 +3137,6 @@ extern "C" void do_boost_wf(cufftDoubleComplex * boost_field, cufftDoubleComplex
   int blocks= (int) ceil((float)dim/(float)threads_per_block);
 
   boost_wf<<<blocks,threads_per_block>>>(boost_field, wavf, dim); 
-
-}
-
-extern "C" void do_boost_wf2(cufftDoubleComplex * boost_field, cufftDoubleComplex * wavf ,int dim)
-{
-
-  int threads_per_block=512;
-  int blocks= (int) ceil((float)dim/(float)threads_per_block);
-
-  boost_wf2<<<blocks,threads_per_block>>>(boost_field, wavf, dim); 
 
 }
 

@@ -1,0 +1,9 @@
+This file outlines the general structure of the test cases.  For more specifics about running the examples please look at the README.txt files in the folders O20/ Fission_240Pu/ Collisions_238U/ (they will be contained in subfolders Static/  Time_Dependent/).
+
+1) The first provided test case is a O20 system in a 8x8x8 lattice at spacing 1.25 fm.  This test case serves as a quick acceptance test of the correctness of the builds of the static solver and time dependent code.  It is a fully self consistent simulation, starting from a gaussian approximation wavefunction (build into the code), until 1000 time steps have passed.
+
+2) The second provided test case is a fission calculation for Pu240 in a 24x24x48 lattice at spacing 1.25 fm.  This test case demonstrates a realistic simulation performed by the code, where we take a nucleus on the surface of the outer scission barrier up until the fragments are seperated by 30fm.  Generating the initial conditions is not straightforward (initial densities) but has been provided in the "Static/" folder.
+
+3) The final provided test case is a collision calculation for two U238 nuclei in a 24x24x64 lattice at spacing 1.25 fm.  This test case demonstrates a realistic simulation for nuclear collisions.  The nuclei are collided at center of mass energy (KE - coulomb) 800 MeV, at zero impact parameter, with the major axis of the nuclei aligned with the collision axis.  The calculations are carried out until the two nuclei are seperated by 50 fm.  The initial densities have been provided in the "Static/" folder.
+
+As a rough time estimate for the last two examples on Summit: the fission calculation takes 1 hour (on 92 nodes) for the static solver and 4 hours (on 150 nodes/ 900 Gpus) for the time dependent calculation, while the collision calculation takes 2.5 hours (on 92 nodes) for the static solver and 6 hours (on 150 nodes/ 900 Gpus) for the time dependent calculation.

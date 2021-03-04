@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#BSUB -P NPH126
+#BSUB -W 01:00
+#BSUB -nnodes 1 
+#BSUB -J SLDA
+#BSUB -o SLDA.%J
+#BSUB -e SLDA.%J
+	 
+cd $LS_SUBCWD
+date
+
+time jsrun -n 42 -a 1 -g 0 ./xlise-static input_file.txt >& O20.out
+

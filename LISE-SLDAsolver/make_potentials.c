@@ -26,6 +26,8 @@ void laplacean( double * , const int , double * , const int , const int , const 
 
 void get_u_re( const MPI_Comm , Densities * , Densities * , Potentials * , Couplings * , const double , const int , const int , const int , const int , const int , double * , double * , double * , const int , const int , const int , Lattice_arrays * , FFtransf_vars * , const double , const double ) ;
 
+void add_to_u_re(const MPI_Comm comm , Densities * dens_p , Densities * dens_n , double * ure , Couplings * cc_edf , const double hbar2m , const int nstart , const int nstop , const int nxyz, const int isospin , Lattice_arrays * latt_coords ) ;
+
 void coul_pot( double * , double * , double * , double * , Lattice_arrays * , const int , const int , const int , const double , FFtransf_vars * , const double ) ;
 
 void coul_pot3( double * , double * , double * , double * , Lattice_arrays * , const int , const int , const int , const double , FFtransf_vars * , const double ) ;
@@ -866,6 +868,8 @@ void get_u_re( const MPI_Comm comm , Densities * dens_p , Densities * dens_n , P
    				   
     }
 
+add_to_u_re(comm , dens_p , dens_n , work3 , cc_edf , hbar2m , nstart , nstop , nxyz, isospin , latt_coords );
+
 MPI_Allreduce( work3 , pots->u_re , nxyz , MPI_DOUBLE , MPI_SUM , comm ) ;
 
 MPI_Allreduce( pots->mass_eff , work3 , nxyz , MPI_DOUBLE , MPI_SUM , comm ) ;
@@ -896,6 +900,55 @@ MPI_Allreduce( pots->mass_eff , work3 , nxyz , MPI_DOUBLE , MPI_SUM , comm ) ;
 
   free( work2 ) ;
 
+}
+
+void add_to_u_re(const MPI_Comm comm , Densities * dens_p , Densities * dens_n , double * ure , Couplings * cc_edf , const double hbar2m , const int nstart , const int nstop , const int nxyz, const int isospin , Lattice_arrays * latt_coords )
+{
+    
+    int i;
+
+    double kk = 2.442749;
+
+    double rho_0, rho_1;
+
+    double gg0_n, gg0_p, gg0_n_1, gg0_p_1, gg_n, gg_p, gg_n_1, gg_p_1;
+
+    double mass_eff_n, mass_eff_p, mass_eff_n_1, mass_eff_p_1;
+
+    double dx = latt_coords->za[1] - latt_coords->za[0];
+
+    for( i = nstart ; i < nstop ; i++ ){
+
+      rho_0 = dens_n->rho[i]  + dens_p->rho[i];
+
+      rho_1 = dens_p->rho[i]  - dens_n->rho[i];
+
+      gg0_n=(cc_edf->gg_n)*(1.0-(cc_edf->rhoc)*rho_0);
+
+      gg0_p=(cc_edf->gg_p)*(1.0-(cc_edf->rhoc)*rho_0);
+
+      gg0_n_1 =  (-1.) * (cc_edf->gg_n) * (cc_edf->rhoc);
+
+      gg0_p_1 =  (-1.) * (cc_edf->gg_p) * (cc_edf->rhoc);
+
+      mass_eff_n  =  hbar2m + (cc_edf->c_tau_0)*rho_0 + (cc_edf->c_tau_1)*rho_1;
+
+      mass_eff_p  =  hbar2m + (cc_edf->c_tau_0)*rho_0 - (cc_edf->c_tau_1)*rho_1;
+
+      mass_eff_n_1 = cc_edf->c_tau_0 - isospin * (cc_edf->c_tau_1);
+
+      mass_eff_p_1 = cc_edf->c_tau_0 + isospin * (cc_edf->c_tau_1);
+
+      gg_n = gg0_n / (1.0 - gg0_n*kk/mass_eff_n /8.0/((double) PI)/dx);
+
+      gg_p = gg0_p / (1.0 - gg0_p*kk/mass_eff_p /8.0/((double) PI)/dx); 
+      
+      gg_n_1 = (1./pow(gg0_n,2.0)*gg0_n_1 - mass_eff_n_1/pow(mass_eff_n,2.0)/8./((double) PI)/dx*kk)* pow(gg_n, 2.0);
+
+      gg_p_1 = (1./pow(gg0_p,2.0)*gg0_p_1 - mass_eff_p_1/pow(mass_eff_p,2.0)/8./((double) PI)/dx*kk)* pow(gg_p, 2.0);
+
+      ure[i] += gg_n_1 * pow(cabs(dens_n->nu[ i - nstart ]),2.0) + gg_p_1 *pow(cabs(dens_p->nu[ i - nstart ]),2.0);
+    }    
 }
 
 void mix_potentials( double * pot_array , double * pot_array_old , const double alpha , const int ishift , const int n )

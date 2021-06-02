@@ -914,14 +914,6 @@ __global__ void get_ure_lapl_mass(cufftDoubleComplex * fft3, cufftDoubleReal * p
   cufftDoubleReal rho_p, rho_n, rho_0, rho_1 ;
   cufftDoubleReal r=(cufftDoubleReal)(1.)/(cufftDoubleReal)(d_nxyz);
   cufftDoubleReal r2=((cufftDoubleReal)(0.5))*r;
-
-  cufftDoubleReal kk = 2.442749;
-  cufftDoubleReal ggp = -292.5417;
-  cufftDoubleReal ggn = -225.3672;
-  cufftDoubleReal prefactor = kk * (cufftDoubleReal) (8.0) /d_PI/d_dx;
-
-  cufftDoubleReal numerator_p = (cufftDoubleReal) (-1.0)*prefactor*ggp*ggp;
-  cufftDoubleReal numerator_n = (cufftDoubleReal) (-1.0)*prefactor*ggn*ggn;
  
   if ( ixyz < d_nxyz ) 
     {
@@ -987,19 +979,59 @@ __global__ void get_ure_lapl_mass(cufftDoubleComplex * fft3, cufftDoubleReal * p
       //exchange Coulomb potential
       potentials[ ixyz ] += ( (cufftDoubleReal) (0.5) * (d_c_isospin + (cufftDoubleReal)(1.)) ) * (d_e2*pow(density[ixyz],d_xpow)) * (cufftDoubleReal) d_c_iexcoul;
 
-     cufftDoubleReal denominator_p = pow((mass_eff_p - prefactor*ggp),(cufftDoubleReal)(2.0));
-     cufftDoubleReal denominator_n = pow((mass_eff_n - prefactor*ggn),(cufftDoubleReal)(2.0));
-
-     // only cubic case programmed so far.
-      if(d_c_Skyrme){
-     potentials[ixyz] += numerator_p/denominator_p*d_c_tau_p*pow(cuCabs(nu_p),(cufftDoubleReal)(2.0))
-     +numerator_n/denominator_n*d_c_tau_n*pow(cuCabs(nu_n),(cufftDoubleReal)(2.0));
-	}
-
       // laplacean of effective mass
       potentials[ ixyz + 2*d_nxyz ] = fft3[ixyz + d_nxyz ].x * r2 ;
       
     }
+}
+
+__global__ void add_to_u_re( cufftDoubleComplex * nu_p, cufftDoubleComplex * nu_n, cufftDoubleReal * potentials, cufftDoubleReal * rho_p, cufftDoubleReal * rho_n){
+
+    int i = threadIdx.x + blockIdx.x * blockDim.x;
+    
+    cufftDoubleReal kk = 2.442749;
+
+    cufftDoubleReal rho_0, rho_1;
+
+    cufftDoubleReal gg0_n, gg0_p, gg0_n_1, gg0_p_1, gg_n, gg_p, gg_n_1, gg_p_1;
+
+    cufftDoubleReal mass_eff_n, mass_eff_p, mass_eff_n_1, mass_eff_p_1;
+
+    if (i < d_nxyz){
+
+      rho_0 = rho_n[i] + rho_p[i];
+
+      rho_1 = rho_n[i] - rho_p[i];
+
+      gg0_n=d_gg_n*((cufftDoubleReal)(1.)-d_rhoc*rho_0);
+
+      gg0_p=d_gg_p*((cufftDoubleReal)(1.)-d_rhoc*rho_0);
+
+      gg0_n_1 =  (cufftDoubleReal) (-1.) * d_gg_n * d_rhoc;
+
+      gg0_p_1 =  (cufftDoubleReal) (-1.) * d_gg_p * d_rhoc;
+     
+
+      mass_eff_n  =  d_hbar2m + d_c_tau_0*rho_0 + d_c_tau_1*rho_1;
+
+      mass_eff_p  =  d_hbar2m + d_c_tau_0*rho_0 - d_c_tau_1*rho_1;
+
+      mass_eff_n_1 = d_c_tau_0 - d_c_isospin * d_c_tau_1;
+
+      mass_eff_p_1 = d_c_tau_0 + d_c_isospin * d_c_tau_1;
+
+      gg_n = gg0_n / (1.0 - gg0_n*kk/mass_eff_n /8.0/d_PI/d_dx);
+
+      gg_p = gg0_p / (1.0 - gg0_p*kk/mass_eff_p /8.0/d_PI/d_dx);
+      
+      gg_n_1 = (1./pow(gg0_n,2.0)*gg0_n_1 - mass_eff_n_1/pow(mass_eff_n,2.0)/8./d_PI/d_dx*kk)* pow(gg_n, 2.0);
+
+      gg_p_1 = (1./pow(gg0_p,2.0)*gg0_p_1 - mass_eff_p_1/pow(mass_eff_p,2.0)/8./d_PI/d_dx*kk)* pow(gg_p, 2.0);
+
+      potentials[i] += gg_n_1 * cplxNorm2(nu_n[i]) + gg_p_1 * cplxNorm2(nu_p[i]);
+      
+    }
+    
 }
 
 __global__ void addVF_ure( cufftDoubleReal * potentials , cufftDoubleReal ct , cufftDoubleReal * avf )
@@ -1082,10 +1114,8 @@ __global__ void make_delta( cufftDoubleReal *rho_p, cufftDoubleReal *rho_n, cuff
 
 if(icub==1) {
       cufftDoubleReal kk = 2.442749;
-
-      cufftDoubleReal gg0 = d_gg; 
  
-      gg = gg0 / (1.0 - gg0*kk/potentials[i+d_nxyz] /8.0/d_PI/d_dx);
+      gg = gg / (1.0 - gg*kk/potentials[i+d_nxyz] /8.0/d_PI/d_dx);
 
       delta[ i ].x = - nu[ i ].x * gg  ;
       delta[ i ].y = - nu[ i ].y * gg  ;      

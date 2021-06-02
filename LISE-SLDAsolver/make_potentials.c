@@ -735,8 +735,6 @@ void update_potentials( const int icoul , const int isospin , Potentials * pots 
 	  double kk = 2.442749;
 	  
 	  double dx = latt_coords->za[1] - latt_coords->za[0];
-
-	  gg = cc_edf->gg;
 	  
 	  delta[ i ] = - gg * dens->nu[ i - nstart ] / ( 1. - gg * kk / pots->mass_eff[ i] / 8.0 / (double) PI / dx) ;
 	}
@@ -772,18 +770,6 @@ void get_u_re( const MPI_Comm comm , Densities * dens_p , Densities * dens_n , P
   double xpow=1./3.;
 
   double e2 = -197.3269631*pow(3./acos(-1.),xpow) / 137.035999679 ;
-
-  double kk = 2.442749;	 
-  double dx = latt_coords->za[1] - latt_coords->za[0]; 
-  double hbarc = 197.3269631 ;
-  double ggp = -292.5417;
-  double ggn = -225.3672;
-  double prefactor;
-  prefactor  =kk/8.0/ (double ) PI /dx; 
-
-  double numerator_p, numerator_n;
-  numerator_p = -1.0*prefactor * ggp*ggp;
-  numerator_n = -1.0*prefactor * ggn*ggn; 
 
   assert( work1 = malloc( nxyz * sizeof( double ) ) ) ;
 
@@ -877,19 +863,7 @@ void get_u_re( const MPI_Comm comm , Densities * dens_p , Densities * dens_n , P
 		 // external field
 			 + pots->v_ext[i]
 			 ) ;// + ( dens_p->rho[i]+dens_n->rho[i] ) * pots->v_ext[i] ) ;
-   			
-   double denominator_p, denominator_n; 
-   denominator_p = pow((mass_eff_p - prefactor*ggp),2.0);
-   denominator_n = pow((mass_eff_n - prefactor*ggn),2.0);
-
-   if( cc_edf->Skyrme){
-
-    * (work3 + i ) += numerator_p/denominator_p*cc_edf->c_tau_p *  creal(dens_p->nu[i-nstart]*conj(dens_p->nu[i-nstart]))
-	+ numerator_n/denominator_n*cc_edf->c_tau_n * creal(dens_n->nu[i-nstart]*conj(dens_n->nu[i-nstart]));  // NOTE: Careful diving by zero here. 
-
-    }
-// NOTE:  Only programmed from cubic case so far. 
-	   
+   				   
     }
 
 MPI_Allreduce( work3 , pots->u_re , nxyz , MPI_DOUBLE , MPI_SUM , comm ) ;

@@ -150,7 +150,7 @@ void ext_field( Potentials * pots , int ichoice , Lattice_arrays * latt , const 
 
 }
 
-int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf ,int icub)
+int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip, int icub)
 
 {
 
@@ -171,10 +171,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   double hbarc = 197.3269631 ;
   
   double hbar2m = pow( hbarc , 2.0 ) / ( mass_p + mass_n ) ;        
-
-// Skyrme components here for now.  Needs better solution.
-  cc_edf->gg_p = -292.5417; 
-  cc_edf->gg_n = -225.3672;
 
   /* no force */
 
@@ -199,8 +195,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   cc_edf->gamma = 0.0 ;
   
   w0    = 0.0 ;
-
-  cc_edf->gg = 0.0 ;
   
   a0 = 0.0;
   
@@ -220,13 +214,29 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   
   c2 = 0.0 ;
 
+  eta_s = 0.0 ;
+
+  cc_edf->gg = 0.0 ;
+
+  cc_edf->gg_p = cc_edf->gg;
+
+  cc_edf->gg_n = cc_edf->gg;
+
   cc_edf->Skyrme = 1;
 
   cc_edf->iexcoul = 1;
-      
+     
+  /* no force */
+  if( iforce == 0 )
+    {
+      sprintf( edf_name , "no interaction" ) ;
+    }
+ 
   /*   SLy4 force */
 
   if ( iforce == 1 ) {
+
+      sprintf( edf_name , "SLy4" ) ;
 
       t0 = -2488.913 ;
 
@@ -253,6 +263,10 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 if(icub==1)
       cc_edf->gg = -262.0 ;
 
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
+
       cc_edf->rhoc=0.;
 
     }
@@ -260,6 +274,8 @@ if(icub==1)
   if ( iforce == 11 )
 
     {
+
+      sprintf( edf_name , "SLy4 with mixed pairing" ) ;
 
       t0 = -2488.913 ;
 
@@ -283,6 +299,10 @@ if(icub==1)
 
       cc_edf->gg = -370. ;
 
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
+
       cc_edf->rhoc=1./.32;
 
     }
@@ -292,6 +312,8 @@ if(icub==1)
   if ( iforce == 12 )
 
     {
+
+      sprintf( edf_name , "SLy4 with surface pairing" ) ;
 
       t0 = -2488.913 ;
 
@@ -315,6 +337,10 @@ if(icub==1)
 
       cc_edf->gg = -690. ;
 
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
+
       cc_edf->rhoc=1./.16;
 
     }
@@ -325,6 +351,8 @@ if(icub==1)
   if ( iforce == 13 )
 
     {
+
+      sprintf( edf_name , "SLy4 w/ .25 Vol + .75 Surface " ) ;
 
       t0 = -2488.913 ;
 
@@ -348,6 +376,10 @@ if(icub==1)
 
       cc_edf->gg = -480. ;
 
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
+
       cc_edf->rhoc=.75/.16;
 
     }
@@ -359,6 +391,8 @@ if(icub==1)
   if ( iforce == 2)
 
     { 
+
+      sprintf( edf_name , "SkP" ) ;
 
       t0 = -2931.6960 ;
 
@@ -382,13 +416,19 @@ if(icub==1)
 
       cc_edf->gg = -250.0 ;
 
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
+
     }
 
   /*   SkM* force */
 
-  if ( iforce == 3 || iforce == 4 )
+  if ( iforce == 3 || iforce == 4 || iforce == 5)
 
     { 
+
+      sprintf( edf_name , "SKM*" ) ;
 
       t0 = -2645.0 ;
 
@@ -412,7 +452,11 @@ if(icub==1)
 
       cc_edf->gg = -184.7 ;
 
-      if( iforce == 4 )
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
+
+      if( iforce == 4 || iforce==5)
 
 	{
 	  
@@ -433,8 +477,23 @@ if(icub==1)
 	    }
 	}
 
+      if(iforce==4 || iforce==5){
+        if(icub==0){
+  	        cc_edf->gg_p = -292.5417; 
+	        cc_edf->gg_n = -225.3672; 
+        }
+        else if(icub==1){
+          cc_edf->gg_p = -325.90 ;
+          cc_edf->gg_n = -240.99 ;
+        }
+      }
+
       cc_edf->rhoc = 0.5/.16;
 
+      if(iforce==5){
+        cc_edf->rhoc = 0.0;
+        sprintf( edf_name , "SKM* Volume Pairing" ) ;
+      }
     }
 
 
@@ -446,6 +505,8 @@ if(icub==1)
       // Fix rho_c = 0.154 fm^-3
       // W0 is included in the fit
       // The best NEDF until now
+      sprintf( edf_name , "SeaLL1" ) ;
+
       a0 = 0.0;
       
       b0 = -684.524043779;
@@ -473,6 +534,10 @@ if(icub==1)
 
 if(icub==1)
       cc_edf->gg = -230.0; // tuned to reproduce the same pairing gap with spherical cutoff.
+
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
       cc_edf->rhoc = 0.;
 
@@ -591,7 +656,24 @@ if(icub==1)
 
   cc_edf->c_divj_n     =  cc_edf->c_divj_0   - isospin * cc_edf->c_divj_1 ;
 
+  if( ip == 0 ){
 
+    fprintf( stdout, " Density functional parameters \n" ) ;
+
+    fprintf( stdout, " Density functional name: %s \n" , edf_name ) ;
+
+    if(icub==1)
+    printf("cubic-cutoff is used ");
+
+    if( iforce != 7){
+         fprintf( stdout, " ** NEDF parameters ** \n x0 = %f x1 = %f x2 = %f x3 = %f \n" , x0 , x1 , x2 , x3 );
+	 fprintf( stdout, " t0 = %f t1 = %f t2 = %f t3 = %f gamma = %f w0 = %f \n" , t0 , t1 , t2 , t3 , cc_edf->gamma , w0 ) ;
+    }
+    else{
+         fprintf( stdout, " ** NEDF parameters ** \n a0 = %.12lf b0 = %.12lf c0 = %.12lf \n a1 = %.12lf b1 = %.12lf c1 = %.12lf \n a2 = %.12lf b2 = %.12lf c2 = %.12lf eta_s = %.12lf \n" , a0, b0 , c0, a1, b1 , c1, a2, b2, c2, eta_s );
+         fprintf( stdout, " spin-orbit strength w0 = %f \n" , w0 ) ;
+    }
+  }
 
   if ( ihfb == 0 ) 
 

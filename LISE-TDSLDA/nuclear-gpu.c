@@ -1024,9 +1024,9 @@ __global__ void add_to_u_re( cufftDoubleComplex * nu_p, cufftDoubleComplex * nu_
 
       gg_p = gg0_p / (1.0 - gg0_p*kk/mass_eff_p /8.0/d_PI/d_dx);
       
-      gg_n_1 = (1./pow(gg0_n,2.0)*gg0_n_1 - mass_eff_n_1/pow(mass_eff_n,2.0)/8./d_PI/d_dx*kk)* pow(gg_n, 2.0);
+      gg_n_1 = (1./(pow(gg0_n,2.0)+d_eps)*gg0_n_1 - mass_eff_n_1/pow(mass_eff_n,2.0)/8./d_PI/d_dx*kk)* pow(gg_n, 2.0);
 
-      gg_p_1 = (1./pow(gg0_p,2.0)*gg0_p_1 - mass_eff_p_1/pow(mass_eff_p,2.0)/8./d_PI/d_dx*kk)* pow(gg_p, 2.0);
+      gg_p_1 = (1./(pow(gg0_p,2.0)+d_eps)*gg0_p_1 - mass_eff_p_1/pow(mass_eff_p,2.0)/8./d_PI/d_dx*kk)* pow(gg_p, 2.0);
 
       potentials[i] += gg_n_1 * cplxNorm2(nu_n[i]) + gg_p_1 * cplxNorm2(nu_p[i]);
       

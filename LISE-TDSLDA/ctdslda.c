@@ -4,6 +4,7 @@
 
 #include <mpi.h>
 #include <stdio.h>
+#include <getopt.h>
 #include <stdlib.h>
 #include <string.h>
 #include <complex.h>
@@ -411,6 +412,8 @@ int main( int argc , char ** argv )
   int nx , ny , nz , nxyz , nx3 , ny3 , nz3 , nxyz3 , knxyz ;
   double dx , dy , dz , dxyz ;
   double Lc ;
+
+  int option_index = 0 ;
 	
   Wfs * wavef ;
   Densities dens_p , dens_n , * dens , densG_p , densG_n , * densG;
@@ -484,6 +487,8 @@ int main( int argc , char ** argv )
   int irun = 0;  // nuclear fission
   int op_read_flag=-1;
 
+  double ggn = 1e10, ggp = 1e10; // pairing coupling constants.
+
   /*
      distance: distance between two fragments (in fm).
      ec: Coulomb energy between two fragments (in MeV).
@@ -541,27 +546,86 @@ int main( int argc , char ** argv )
   int norm_switch = 0; // If this variable is one then we normalize the wfs.
   int i_norm = 10000000; // Number of time steps between normalizations.
 
-  while ((p=getopt(argc,argv,"g:s:d:a:c:t:e:i:f:v:b:x:m:n:p:"))!=-1) {
-    switch(p){
-    case 'g': gpupernode=atoi(optarg);break; 
-    case 's': total_time_steps=atoi(optarg);break;
-    case 'd': strcpy(dir_in,optarg);break;
-    case 'c': c0=(cufftDoubleReal) atof(optarg);break;
-    case 'e': iext=atoi(optarg); break;
-    case 'f': iforce=atoi(optarg); break;
-    case 'i': irun = atoi(optarg);break; 
-    case 't': req_tim=atof(optarg);break; /* has to be in seconds */
-    case 'x': strcpy(file_extern_op,optarg); op_read_flag=0;break;
+  static struct option long_options[] = {
+    {"gpupernode", required_argument, 0,  'g' },
+    {"tsteps", required_argument, 0,  's' },
+    {"directory", required_argument, 0,  'd' },
+    {"c0", required_argument, 0,  'c' },
+    {"iext", required_argument, 0,  'e' },
+    {"iforce", required_argument, 0,  'f' },
+    {"irun", required_argument, 0,  'i' },
+    {"reqtim", required_argument, 0,  't' }, /* has to be in seconds */
+    {"fileext", required_argument, 0, 'x'},
 #ifdef EXTBOOST
-    case 'a': alpha=atof(optarg); break;
-    case 'v': ecm=atof(optarg);break;
-    case 'b': b=atof(optarg);break;
+    {"alpha", required_argument, 0,  'a' },
+    {"ecm", required_argument, 0,  'v' },
+    {"b", required_argument, 0,  'b' },
 #endif
-    case 'm': mxp=atoi(optarg);break; 
-    case 'n': i_norm=atoi(optarg);break;
-    case 'p': time_bootstrap=atoi(optarg);break;
+    {"mxp", required_argument, 0, 'm' },
+    {"inorm", required_argument , 0,  'n' },
+    {"tbstrap", required_argument, 0, 'p' },
+    {"ggp" , required_argument , 0 , 0 },
+    {"ggn" , required_argument , 0 , 0 },
+    {0,         0,                0,  0 }
+  };
+
+  while ( ( p = getopt_long(argc, argv, "g:s:d:a:c:t:e:i:f:v:b:x:m:n:p:", long_options, &option_index) ) != -1 )
+    switch ( p )
+    {
+      case 0:
+        if ( long_options[option_index].name == "gpupernode" )
+          gpupernode=atoi(optarg);
+        if ( long_options[option_index].name == "tsteps" )
+          total_time_steps=atoi(optarg);
+        if ( long_options[option_index].name == "directory" )
+          strcpy(dir_in,optarg);
+        if ( long_options[option_index].name == "c0" )
+	  c0=(cufftDoubleReal) atof(optarg);
+        if ( long_options[option_index].name == "iext" )
+          iext=atoi(optarg);
+        if ( long_options[option_index].name == "iforce" )
+	  iforce=atoi(optarg);
+        if ( long_options[option_index].name == "irun" )
+	  irun = atoi(optarg);
+        if ( long_options[option_index].name == "reqtim" )
+	  req_tim=atof(optarg);
+#ifdef EXTBOOST
+        if ( long_options[option_index].name == "alpha" )
+	  alpha=atof(optarg);
+        if ( long_options[option_index].name == "ecm" )
+	  ecm=atof(optarg);
+        if ( long_options[option_index].name == "b" )
+	  b=atof(optarg);
+#endif
+        if ( long_options[option_index].name == "mxp" )
+	  mxp=atoi(optarg);
+        if ( long_options[option_index].name == "inorm" )
+	  i_norm=atoi(optarg);
+        if ( long_options[option_index].name == "tbstrap" )
+	  time_bootstrap=atoi(optarg);
+        if ( long_options[option_index].name == "ggp" )
+          ggp = atof( optarg ) ;
+        if ( long_options[option_index].name == "ggn" )
+          ggn = atof( optarg ) ;
+      break;
+      case 'g': gpupernode=atoi(optarg);break;
+      case 's': total_time_steps=atoi(optarg);break;
+      case 'd': strcpy(dir_in,optarg);break;
+      case 'c': c0=(cufftDoubleReal) atof(optarg);break;
+      case 'e': iext=atoi(optarg); break;
+      case 'f': iforce=atoi(optarg); break;
+      case 'i': irun = atoi(optarg);break;
+      case 't': req_tim=atof(optarg);break; /* has to be in seconds */
+      case 'x': strcpy(file_extern_op,optarg); op_read_flag=0;break;
+#ifdef EXTBOOST
+      case 'a': alpha=atof(optarg); break;
+      case 'v': ecm=atof(optarg);break;
+      case 'b': b=atof(optarg);break;
+#endif
+      case 'm': mxp=atoi(optarg);break;
+      case 'n': i_norm=atoi(optarg);break;
+      case 'p': time_bootstrap=atoi(optarg);break;
     }
-  }
 
   if(iext == 70)
     c1 = 0.2; // potential strength to push the nuclei to approach
@@ -1238,7 +1302,20 @@ if(icub==1)
     pots.amu = &amu_p ;
   else
     pots.amu = &amu_n ;
-  dens_func_params( iforce , ihfb , isospin , &cc_edf , icub) ;
+  dens_func_params( iforce , ihfb , isospin , &cc_edf , ip, icub) ;
+
+  if(ggp<1e9){
+    cc_edf.gg_p=ggp;
+    if(isospin==1) cc_edf.gg=ggp;
+  }
+  if(ggn<1e9){
+    cc_edf.gg_n=ggn;
+    if(isospin==-1) cc_edf.gg=ggn;
+  }
+
+  if(ip == 0)
+    fprintf( stdout, " ** Pairing parameters ** \n proton strength = %f neutron strength = %f \n" , cc_edf.gg_p, cc_edf.gg_n ) ;
+
   double gg=cc_edf.gg;
 
   // GPU

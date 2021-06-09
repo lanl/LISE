@@ -147,8 +147,11 @@ typedef struct
 
   double gg ;   /* pairing strength */
 
-  double rhoc; /// for surface pairing
+  double gg_n ; /* pairing strength for neutrons */
 
+  double gg_p ; /* pairing strength for protons */
+
+  double rhoc; /// for surface pairing
 
   int iexcoul; // exchange couloumb
 
@@ -282,4 +285,8 @@ typedef struct
 
   int nb;   // grid size
 
+  double ggn; // couplings constant for neutrons
+
+  double ggp;  // coupling constant for protons
+  
 }metadata_t;

@@ -24,7 +24,7 @@ void match_lattices( Lattice_arrays *latt , Lattice_arrays * latt3 , const int n
 
 void coul_pot3( double * vcoul , double * rho , double * work1 , double * work2 , Lattice_arrays * latt_coords , const int nxyz , FFtransf_vars * fftransf_vars , const double dxyz );
 
-int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf ,int icub);
+int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip, int icub);
 
 void read_input_solver( int * nx , int * ny , int * nz , int * nwf_p , int * nwf_n , double * amu_p , double * amu_n , double * dx , double * dy , double * dz , double * e_cut ){
     
@@ -383,7 +383,7 @@ int main( int argc , char ** argv ){
     }
 
     
-    dens_func_params( iforce , ihfb , 1 , &cc_edf , icub);
+    dens_func_params( iforce , ihfb , 1 , &cc_edf , 0, icub);
     
     int nxyz=nx*ny*nz;
     dens_p=malloc(14*nxyz*sizeof(double));

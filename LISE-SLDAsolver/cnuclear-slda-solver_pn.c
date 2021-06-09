@@ -181,7 +181,9 @@ metadata_t md =
     8, // p
     8, // q
     40, //mb
-    40 // nb
+    40, // nb
+    1e10, //ggp: above 1e9 value does not record
+    1e10 //ggn
   };
 
 
@@ -346,49 +348,10 @@ int main( int argc , char ** argv )
 
   int ierr;
 
+  double ggp=1e10, ggn=1e10; // pairing coupling constants
+
   setbuf(stdout, NULL);
-
-  static struct option long_options[] = {
-    {"nx", required_argument, 0,  0 },
-    {"ny", required_argument, 0,  0 },
-    {"nz", required_argument, 0,  0 },
-    {"Lx", required_argument, 0,  0 },
-    {"Ly", required_argument, 0,  0 },
-    {"Lz", required_argument, 0,  0 },
-    {"dx", required_argument, 0,  0 },
-    {"dy", required_argument, 0,  0 },
-    {"dz", required_argument, 0,  0 },
-    {"broyden", no_argument, 0, 'b' },
-    {"nocoulomb", no_argument , 0 , 0 },
-    {"niter" , required_argument , 0 , 'n' },
-    {"nopairing" , no_argument , 0 , 0 },
-    {"iext" , required_argument , 0 , 'e'},
-    {"alpha_mix" , required_argument , 0 , 'a'},
-    {"force", required_argument , 0 , 'f'},
-    {"nprot", required_argument , 0 , 'Z'},
-    {"nneut", required_argument , 0 , 'N'},
-    {"irun", required_argument , 0 , 'r'},
-    {"resc_dens", no_argument , 0 , 0 },
-    {"iprint_wf" , required_argument , 0 , 'p' },
-    {"ecut" , required_argument , 0 , 0 },
-    {"pproc" , required_argument , 0 , 0 },
-    {"qproc" , required_argument , 0 , 0 },
-    {"nb" , required_argument , 0 , 0 },
-    {"mb" , required_argument , 0 , 0 },
-    {"deformation" , required_argument , 0 , 0 },
-    {"hbo" , required_argument , 0 , 0 },
-    {"q0" , required_argument , 0 , 'q' },
-    {"v0" , required_argument , 0 , 'v' },
-    {"y3" , required_argument , 0 , 0 },
-    {"asym" , required_argument , 0 , 0 },
-    {"z0" , required_argument , 0 , 'z' },
-    {"y0" , required_argument , 0 , 'y' },
-    {"wneck" , required_argument , 0 , 0 },
-    {"rneck" , required_argument , 0 , 0 },
-    {0,         0,                 0,  0 }
-
-  };
-
+  
   MPI_Init( &argc , &argv ) ;
 
   MPI_Comm_rank( MPI_COMM_WORLD, &ip ); 
@@ -513,6 +476,10 @@ int main( int argc , char ** argv )
   
   nb = md.nb;
   
+  // pairing coupling constants
+  ggp = md.ggp;
+ 
+  ggn = md.ggn;
 
   if( nx < 0 || ny < 0 || nz < 0 || nprot < 0. || nneut < 0. )
 
@@ -1102,6 +1069,18 @@ int main( int argc , char ** argv )
 #endif
 
   dens_func_params( iforce , ihfb , isospin , &cc_edf , ip ,icub) ; 
+
+  if(ggp<1e9){
+    cc_edf.gg_p=ggp;
+    if(isospin==1) cc_edf.gg=ggp;
+  }
+  if(ggn<1e9){
+    cc_edf.gg_n=ggn;
+    if(isospin==-1) cc_edf.gg=ggn;
+  }
+
+  if(ip == 0)
+    fprintf( stdout, " ** Pairing parameters ** \n proton strength = %f neutron strength = %f \n" , cc_edf.gg_p, cc_edf.gg_n ) ;
 
   /* need to set the grid here */
 
@@ -1916,6 +1895,12 @@ int parse_input_file(char * file_name)
         else if (strcmp (tag,"nb") == 0)
 	  sscanf (s,"%s %d %*s",tag,&md.nb);
 	
+        else if (strcmp (tag,"ggp") == 0)
+	  sscanf (s,"%s %lf %*s",tag,&md.ggp);
+	
+        else if (strcmp (tag,"ggn") == 0)
+	  sscanf (s,"%s %lf %*s",tag,&md.ggn);
+
     }
     
     fclose(fp);

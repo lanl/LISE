@@ -288,5 +288,7 @@ typedef struct
   double ggn; // couplings constant for neutrons
 
   double ggp;  // coupling constant for protons
-  
+ 
+  double alpha_pairing; // pairing mixing parameter: 0 for volume, 0.5 for mixed, 1.0 for surface (default is volume).
+ 
 }metadata_t;

@@ -487,6 +487,7 @@ int main( int argc , char ** argv )
   int irun = 0;  // nuclear fission
   int op_read_flag=-1;
 
+  double alpha_pairing = 0.0; // pairing mixing parameter: 0 is volume, 0.5 is mixed, 1.0 is surface.
   double ggn = 1e10, ggp = 1e10; // pairing coupling constants.
 
   /*
@@ -564,6 +565,7 @@ int main( int argc , char ** argv )
     {"mxp", required_argument, 0, 'm' },
     {"inorm", required_argument , 0,  'n' },
     {"tbstrap", required_argument, 0, 'p' },
+    {"apair" , required_argument , 0 , 0 },
     {"ggp" , required_argument , 0 , 0 },
     {"ggn" , required_argument , 0 , 0 },
     {0,         0,                0,  0 }
@@ -603,6 +605,8 @@ int main( int argc , char ** argv )
 	  i_norm=atoi(optarg);
         if ( long_options[option_index].name == "tbstrap" )
 	  time_bootstrap=atoi(optarg);
+        if ( long_options[option_index].name == "apair" )
+          alpha_pairing = atof( optarg ) ;
         if ( long_options[option_index].name == "ggp" )
           ggp = atof( optarg ) ;
         if ( long_options[option_index].name == "ggn" )
@@ -1302,7 +1306,7 @@ if(icub==1)
     pots.amu = &amu_p ;
   else
     pots.amu = &amu_n ;
-  dens_func_params( iforce , ihfb , isospin , &cc_edf , ip, icub) ;
+  dens_func_params( iforce , ihfb , isospin , &cc_edf , ip, icub,alpha_pairing) ;
 
   if(ggp<1e9){
     cc_edf.gg_p=ggp;

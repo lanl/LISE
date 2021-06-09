@@ -150,7 +150,7 @@ void ext_field( Potentials * pots , int ichoice , Lattice_arrays * latt , const 
 
 }
 
-int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip, int icub)
+int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip, int icub, double alpha_pairing)
 
 {
 
@@ -173,8 +173,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   double hbar2m = pow( hbarc , 2.0 ) / ( mass_p + mass_n ) ;        
 
   /* no force */
-
-  cc_edf->rhoc=0.;
 
   t0 = 0.0 ;
 
@@ -215,6 +213,8 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   c2 = 0.0 ;
 
   eta_s = 0.0 ;
+
+  cc_edf->rhoc = 6.25*alpha_pairing; // alpha_pairing/0.16;  
 
   cc_edf->gg = 0.0 ;
 
@@ -267,8 +267,6 @@ if(icub==1)
 
       cc_edf->gg_n = cc_edf->gg;
 
-      cc_edf->rhoc=0.;
-
     }
 
   if ( iforce == 11 )
@@ -302,8 +300,6 @@ if(icub==1)
       cc_edf->gg_p = cc_edf->gg;
 
       cc_edf->gg_n = cc_edf->gg;
-
-      cc_edf->rhoc=1./.32;
 
     }
 
@@ -341,8 +337,6 @@ if(icub==1)
 
       cc_edf->gg_n = cc_edf->gg;
 
-      cc_edf->rhoc=1./.16;
-
     }
 
 
@@ -379,8 +373,6 @@ if(icub==1)
       cc_edf->gg_p = cc_edf->gg;
 
       cc_edf->gg_n = cc_edf->gg;
-
-      cc_edf->rhoc=.75/.16;
 
     }
 
@@ -424,7 +416,7 @@ if(icub==1)
 
   /*   SkM* force */
 
-  if ( iforce == 3 || iforce == 4 || iforce == 5)
+  if ( iforce == 3 || iforce == 4 )
 
     { 
 
@@ -456,7 +448,7 @@ if(icub==1)
 
       cc_edf->gg_n = cc_edf->gg;
 
-      if( iforce == 4 || iforce==5)
+      if( iforce == 4 )
 
 	{
 	  
@@ -477,7 +469,7 @@ if(icub==1)
 	    }
 	}
 
-      if(iforce==4 || iforce==5){
+      if(iforce==4 ){
         if(icub==0){
   	        cc_edf->gg_p = -292.5417; 
 	        cc_edf->gg_n = -225.3672; 
@@ -486,13 +478,6 @@ if(icub==1)
           cc_edf->gg_p = -325.90 ;
           cc_edf->gg_n = -240.99 ;
         }
-      }
-
-      cc_edf->rhoc = 0.5/.16;
-
-      if(iforce==5){
-        cc_edf->rhoc = 0.0;
-        sprintf( edf_name , "SKM* Volume Pairing" ) ;
       }
     }
 
@@ -538,8 +523,6 @@ if(icub==1)
       cc_edf->gg_p = cc_edf->gg;
 
       cc_edf->gg_n = cc_edf->gg;
-
-      cc_edf->rhoc = 0.;
 
       cc_edf->Skyrme = 0;
 
@@ -673,6 +656,8 @@ if(icub==1)
          fprintf( stdout, " ** NEDF parameters ** \n a0 = %.12lf b0 = %.12lf c0 = %.12lf \n a1 = %.12lf b1 = %.12lf c1 = %.12lf \n a2 = %.12lf b2 = %.12lf c2 = %.12lf eta_s = %.12lf \n" , a0, b0 , c0, a1, b1 , c1, a2, b2, c2, eta_s );
          fprintf( stdout, " spin-orbit strength w0 = %f \n" , w0 ) ;
     }
+
+  fprintf( stdout, " ** Pairing mixing ** \n alpha = %f \n", alpha_pairing );
   }
 
   if ( ihfb == 0 ) 

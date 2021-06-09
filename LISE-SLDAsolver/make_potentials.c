@@ -38,7 +38,7 @@ void filter_hm_r( double * , const int , FFtransf_vars * ) ;
 
 double center_dist( double * , const int , Lattice_arrays * , double * , double * , double * ) ;
 
-int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip ,int icub)
+int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip ,int icub, double alpha_pairing)
 
 {
 
@@ -99,8 +99,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   c2 = 0.0 ;
   
   eta_s = 0.0 ;
-  
-  
+ 
+  cc_edf->rhoc = 6.25*alpha_pairing; // alpha_pairing/0.16;  
+ 
   cc_edf->gg = 0.0 ;
 
   cc_edf->gg_p = cc_edf->gg;
@@ -156,8 +157,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg_n = cc_edf->gg;
 
-      cc_edf->rhoc = 0.;
-
     }
   /*   SLy4 force */
 
@@ -193,8 +192,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg_n = cc_edf->gg;
 
-      cc_edf->rhoc=1./.32;
-
     }
   /*   SLy4 force */
 
@@ -229,8 +226,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
       cc_edf->gg_p = cc_edf->gg;
 
       cc_edf->gg_n = cc_edf->gg;
-
-      cc_edf->rhoc=1./.16;
 
     }
 
@@ -269,8 +264,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg_n = cc_edf->gg;
 
-      cc_edf->rhoc=.75/.16;
-
     }
 
   /*   SkP force */
@@ -307,13 +300,11 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg_n = cc_edf->gg;
 
-      cc_edf->rhoc = 0.;
-
     }
 
   /*   SkM* force */
 
-  if ( iforce == 3 || iforce == 4 || iforce == 5)
+  if ( iforce == 3 || iforce == 4 )
 
     { 
 
@@ -345,7 +336,7 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg_n = cc_edf->gg;
 
-      if( iforce == 4 || iforce == 5)
+      if( iforce == 4 )
 
 	{
 	  
@@ -366,7 +357,7 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 	    }
 	}
 
-      if(iforce==4 || iforce==5){
+      if(iforce==4 ){
         if(icub==0){
   	        cc_edf->gg_p = -292.5417; 
 	        cc_edf->gg_n = -225.3672; 
@@ -375,13 +366,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
           cc_edf->gg_p = -325.90 ;
           cc_edf->gg_n = -240.99 ;
         }
-      }
-
-      cc_edf->rhoc = 0.5/.16;
-
-      if(iforce==5){     
-	cc_edf->rhoc = 0.0;
-        sprintf( edf_name , "SKM* Volume Pairing" ) ;
       }
 
     }
@@ -419,8 +403,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
       cc_edf->gg_p = cc_edf->gg;
 
       cc_edf->gg_n = cc_edf->gg;
-
-      cc_edf->rhoc = 0.;
 
     }
 
@@ -466,8 +448,6 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg_n = cc_edf->gg;
 
-      cc_edf->rhoc = 0.;
-
       cc_edf->Skyrme = 0;
                   
     }
@@ -497,6 +477,7 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
   }
 
+  fprintf( stdout, " ** Pairing mixing ** \n alpha = %f \n", alpha_pairing );
 //    fprintf( stdout, " ** Pairing parameters ** \n strength = %f \n" , cc_edf->gg ) ;
 
   }

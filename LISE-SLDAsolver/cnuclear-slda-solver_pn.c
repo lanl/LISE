@@ -47,7 +47,7 @@ void pzheevd( char * , char * , int * , double complex * , int * , int * , int *
 //#include <mkl_pblas.h>
 //void  pzheevd(const char* jobz, const char* uplo, const MKL_INT* n, const MKL_Complex16* a, const MKL_INT* ia, const MKL_INT* ja, const MKL_INT* desca, double* w, MKL_Complex16* z, const MKL_INT* iz, const MKL_INT* jz, const MKL_INT* descz, MKL_Complex16* work, const MKL_INT* lwork, double* rwork, const MKL_INT* lrwork, MKL_INT* iwork, const MKL_INT* liwork, MKL_INT* info);
 
-int dens_func_params( const int , const int , const int , Couplings * , const int , int icub) ;
+int dens_func_params( const int , const int , const int , Couplings * , const int , int icub, double alpha_pairing) ;
 
 void generate_ke_1d( double * , const int , const double , const int ) ;
 
@@ -183,7 +183,8 @@ metadata_t md =
     40, //mb
     40, // nb
     1e10, //ggp: above 1e9 value does not record
-    1e10 //ggn
+    1e10, //ggn
+    0.0 // alpha_pairing: 0.0 for volume, 0.5 for mixed, 1.0 for surface
   };
 
 
@@ -281,6 +282,10 @@ int main( int argc , char ** argv )
 
   int iprint_wf = -1 ; /* -1 no wfs saved , 0 all wfs saved , 1 Z proton wfs saved, 2 N neutron wfs saved */
 
+  double ggp=1e10, ggn=1e10; // pairing coupling constants
+
+  double alpha_pairing=0.0; // pairing mixing parameter: 0 volume, 0.5 mixed, 1.0 volume.
+
   int m_broy , ishift , m_keep = 7 , it1 ;
 
   double si ;
@@ -347,8 +352,6 @@ int main( int argc , char ** argv )
   double Lx=-1.,Ly=-1.,Lz=-1;
 
   int ierr;
-
-  double ggp=1e10, ggn=1e10; // pairing coupling constants
 
   setbuf(stdout, NULL);
   
@@ -480,6 +483,9 @@ int main( int argc , char ** argv )
   ggp = md.ggp;
  
   ggn = md.ggn;
+
+  // pairing mixing parameter.
+  alpha_pairing = md.alpha_pairing;
 
   if( nx < 0 || ny < 0 || nz < 0 || nprot < 0. || nneut < 0. )
 
@@ -1068,7 +1074,7 @@ int main( int argc , char ** argv )
 
 #endif
 
-  dens_func_params( iforce , ihfb , isospin , &cc_edf , ip ,icub) ; 
+  dens_func_params( iforce , ihfb , isospin , &cc_edf , ip ,icub, alpha_pairing) ; 
 
   if(ggp<1e9){
     cc_edf.gg_p=ggp;
@@ -1900,6 +1906,9 @@ int parse_input_file(char * file_name)
 	
         else if (strcmp (tag,"ggn") == 0)
 	  sscanf (s,"%s %lf %*s",tag,&md.ggn);
+
+        else if (strcmp (tag,"alpha_pairing") == 0)
+	  sscanf (s,"%s %lf %*s",tag,&md.alpha_pairing);
 
     }
     

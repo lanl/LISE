@@ -16,7 +16,6 @@ alpha_mix 0.25
 resc_dens 0
 ecut 100.0
 irun 0
-icub 1
 imass 0
 icm 0
 isymm 0

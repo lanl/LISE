@@ -165,7 +165,7 @@ metadata_t md =
     1, // pairing
     0.25, // alpha_mixing
     200.0, // ecut
-    1, // icub
+//    1, // icub
     0, // imass
     0, // icm
     0, // irun
@@ -1853,8 +1853,8 @@ int parse_input_file(char * file_name)
 	else if (strcmp (tag,"ecut") == 0)
 	  sscanf (s,"%s %lf %*s",tag,&md.ecut);
 
-	else if (strcmp (tag,"icub") == 0)
-	  sscanf (s,"%s %d %*s",tag,&md.icub);
+//	else if (strcmp (tag,"icub") == 0)
+//	  sscanf (s,"%s %d %*s",tag,&md.icub);
 
 	else if (strcmp (tag,"imass") == 0)
 	  sscanf (s,"%s %d %*s",tag,&md.imass);

@@ -251,7 +251,7 @@ typedef struct
 
   double ecut;          // energy cut-off
 
-  int icub; // 0 for spherical cutoff, 1 for cubic cutoff
+//  int icub; // 0 for spherical cutoff, 1 for cubic cutoff
 
   int imass; // 0 for same proton neutron mass, 1 for different masses
 

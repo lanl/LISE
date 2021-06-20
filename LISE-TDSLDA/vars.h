@@ -8,7 +8,6 @@ Variable definitions
 
 #include <fftw3.h>
 
-#define CUBIC_CUTOFF
 //#define SAVEOCC
 //#define RSTRT
 //#define LZCALC

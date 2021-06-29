@@ -23,7 +23,7 @@ void compute_curlj_dens( double complex ** deriv_x , double complex ** deriv_y ,
 
 void compute_so_dens( double complex ** deriv_x , double complex ** deriv_y , double complex ** deriv_z , double * divjj , const int nwfip , const int nxyz , const MPI_Comm comm , double * ) ;
 
-int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf ,int icub) ;
+int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip, int icub, double alpha_pairing) ;
 
 void gradient( double complex * f , double complex * fx , double complex * fy , double complex * fz , FFtransf_vars * fftrans , Lattice_arrays * latt , const int nxyz , double complex * buff ) ;
 

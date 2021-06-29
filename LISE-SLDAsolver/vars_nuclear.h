@@ -147,8 +147,11 @@ typedef struct
 
   double gg ;   /* pairing strength */
 
-  double rhoc; /// for surface pairing
+  double gg_n ; /* pairing strength for neutrons */
 
+  double gg_p ; /* pairing strength for protons */
+
+  double rhoc; /// for surface pairing
 
   int iexcoul; // exchange couloumb
 
@@ -248,7 +251,7 @@ typedef struct
 
   double ecut;          // energy cut-off
 
-  int icub; // 0 for spherical cutoff, 1 for cubic cutoff
+//  int icub; // 0 for spherical cutoff, 1 for cubic cutoff
 
   int imass; // 0 for same proton neutron mass, 1 for different masses
 
@@ -282,4 +285,10 @@ typedef struct
 
   int nb;   // grid size
 
+  double ggn; // couplings constant for neutrons
+
+  double ggp;  // coupling constant for protons
+ 
+  double alpha_pairing; // pairing mixing parameter: 0 for volume, 0.5 for mixed, 1.0 for surface (default is volume).
+ 
 }metadata_t;

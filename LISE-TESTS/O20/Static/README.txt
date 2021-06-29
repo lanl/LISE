@@ -25,7 +25,6 @@ The input_file.txt defines the parameters of the simulation:
 	resc_dens 0 -- if 1 will scale initial densities to correct number of particles (if 0 no change).
 	ecut 100.0 -- energy cutoff in MeV used for the pairing renormalization scheme.
 	irun 0 -- different run modes for solver (0 for scratch, 1 for reading from densities, 2 for reading from potentials).
-	icub 1 -- if 1 we use a cubic momentum cutoff, if 0 we use a spherical momentum cutoff.
 	imass 0 -- if 1 we use different proton and neutron masses, if 0 we use the same mass.
 	icm 0 -- if 0 we don't include the center of mass correction, if 1 we do.
 	isymm 0 -- if 0 full coordinate space solver, if 1 cylindrical solver.

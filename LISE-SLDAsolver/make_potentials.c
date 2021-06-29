@@ -38,7 +38,7 @@ void filter_hm_r( double * , const int , FFtransf_vars * ) ;
 
 double center_dist( double * , const int , Lattice_arrays * , double * , double * , double * ) ;
 
-int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip ,int icub)
+int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip ,int icub, double alpha_pairing)
 
 {
 
@@ -99,9 +99,14 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   c2 = 0.0 ;
   
   eta_s = 0.0 ;
-  
-  
+ 
+  cc_edf->rhoc = 6.25*alpha_pairing; // alpha_pairing/0.16;  
+ 
   cc_edf->gg = 0.0 ;
+
+  cc_edf->gg_p = cc_edf->gg;
+
+  cc_edf->gg_n = cc_edf->gg;
 
   cc_edf->Skyrme = 1;
 
@@ -110,7 +115,7 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
   /* no force */
   if( iforce == 0 )	
     {
-      sprintf( edf_name , "no intertion" ) ;
+      sprintf( edf_name , "no interaction" ) ;
     }
   
   
@@ -148,7 +153,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
     else if(icub==1)
       cc_edf->gg = -262.0 ; 
 
-      cc_edf->rhoc = 0.;
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
     }
   /*   SLy4 force */
@@ -181,7 +188,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg = -370. ; 
 
-      cc_edf->rhoc=1./.32;
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
     }
   /*   SLy4 force */
@@ -214,7 +223,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg = -690. ; 
 
-      cc_edf->rhoc=1./.16;
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
     }
 
@@ -249,7 +260,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg = -480. ; 
 
-      cc_edf->rhoc=.75/.16;
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
     }
 
@@ -283,7 +296,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg = -196.6 ;
 
-      cc_edf->rhoc = 0.;
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
     }
 
@@ -317,6 +332,10 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg = -184.7 ;
 
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
+
       if( iforce == 4 )
 
 	{
@@ -338,7 +357,16 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 	    }
 	}
 
-      cc_edf->rhoc = 0.5/.16;
+      if(iforce==4 ){
+        if(icub==0){
+  	        cc_edf->gg_p = -292.5417; 
+	        cc_edf->gg_n = -225.3672; 
+        }
+        else if(icub==1){
+          cc_edf->gg_p = -325.90 ;
+          cc_edf->gg_n = -240.99 ;
+        }
+      }
 
     }
 
@@ -372,7 +400,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
       cc_edf->gg = -233.0 ;
 
-      cc_edf->rhoc = 0.;
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
     }
 
@@ -414,7 +444,9 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
       else if(icub==1)
       cc_edf->gg = -230.0; // tuned to reproduce the same pairing gap with spherical cutoff.
 
-      cc_edf->rhoc = 0.;
+      cc_edf->gg_p = cc_edf->gg;
+
+      cc_edf->gg_n = cc_edf->gg;
 
       cc_edf->Skyrme = 0;
                   
@@ -445,7 +477,8 @@ int dens_func_params( const int iforce , const int ihfb , const int isospin , Co
 
   }
 
-    fprintf( stdout, " ** Pairing parameters ** \n strength = %f \n" , cc_edf->gg ) ;
+  fprintf( stdout, " ** Pairing mixing ** \n alpha = %f \n", alpha_pairing );
+//    fprintf( stdout, " ** Pairing parameters ** \n strength = %f \n" , cc_edf->gg ) ;
 
   }
 
@@ -943,9 +976,9 @@ void add_to_u_re(const MPI_Comm comm , Densities * dens_p , Densities * dens_n ,
 
       gg_p = gg0_p / (1.0 - gg0_p*kk/mass_eff_p /8.0/((double) PI)/dx); 
       
-      gg_n_1 = (1./pow(gg0_n,2.0)*gg0_n_1 - mass_eff_n_1/pow(mass_eff_n,2.0)/8./((double) PI)/dx*kk)* pow(gg_n, 2.0);
+      gg_n_1 = (1./(pow(gg0_n,2.0)+1e-14)*gg0_n_1 - mass_eff_n_1/pow(mass_eff_n,2.0)/8./((double) PI)/dx*kk)* pow(gg_n, 2.0);
 
-      gg_p_1 = (1./pow(gg0_p,2.0)*gg0_p_1 - mass_eff_p_1/pow(mass_eff_p,2.0)/8./((double) PI)/dx*kk)* pow(gg_p, 2.0);
+      gg_p_1 = (1./(pow(gg0_p,2.0)+1e-14)*gg0_p_1 - mass_eff_p_1/pow(mass_eff_p,2.0)/8./((double) PI)/dx*kk)* pow(gg_p, 2.0);
 
       ure[i] += gg_n_1 * pow(cabs(dens_n->nu[ i - nstart ]),2.0) + gg_p_1 *pow(cabs(dens_p->nu[ i - nstart ]),2.0);
     }    

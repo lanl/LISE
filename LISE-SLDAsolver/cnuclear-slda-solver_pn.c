@@ -47,7 +47,7 @@ void pzheevd( char * , char * , int * , double complex * , int * , int * , int *
 //#include <mkl_pblas.h>
 //void  pzheevd(const char* jobz, const char* uplo, const MKL_INT* n, const MKL_Complex16* a, const MKL_INT* ia, const MKL_INT* ja, const MKL_INT* desca, double* w, MKL_Complex16* z, const MKL_INT* iz, const MKL_INT* jz, const MKL_INT* descz, MKL_Complex16* work, const MKL_INT* lwork, double* rwork, const MKL_INT* lrwork, MKL_INT* iwork, const MKL_INT* liwork, MKL_INT* info);
 
-int dens_func_params( const int , const int , const int , Couplings * , const int , int icub) ;
+int dens_func_params( const int , const int , const int , Couplings * , const int , int icub, double alpha_pairing) ;
 
 void generate_ke_1d( double * , const int , const double , const int ) ;
 
@@ -165,7 +165,7 @@ metadata_t md =
     1, // pairing
     0.25, // alpha_mixing
     200.0, // ecut
-    1, // icub
+//    1, // icub
     0, // imass
     0, // icm
     0, // irun
@@ -181,7 +181,10 @@ metadata_t md =
     8, // p
     8, // q
     40, //mb
-    40 // nb
+    40, // nb
+    1e10, //ggp: above 1e9 value does not record
+    1e10, //ggn
+    0.0 // alpha_pairing: 0.0 for volume, 0.5 for mixed, 1.0 for surface
   };
 
 
@@ -279,6 +282,10 @@ int main( int argc , char ** argv )
 
   int iprint_wf = -1 ; /* -1 no wfs saved , 0 all wfs saved , 1 Z proton wfs saved, 2 N neutron wfs saved */
 
+  double ggp=1e10, ggn=1e10; // pairing coupling constants
+
+  double alpha_pairing=0.0; // pairing mixing parameter: 0 volume, 0.5 mixed, 1.0 volume.
+
   int m_broy , ishift , m_keep = 7 , it1 ;
 
   double si ;
@@ -347,48 +354,7 @@ int main( int argc , char ** argv )
   int ierr;
 
   setbuf(stdout, NULL);
-
-  static struct option long_options[] = {
-    {"nx", required_argument, 0,  0 },
-    {"ny", required_argument, 0,  0 },
-    {"nz", required_argument, 0,  0 },
-    {"Lx", required_argument, 0,  0 },
-    {"Ly", required_argument, 0,  0 },
-    {"Lz", required_argument, 0,  0 },
-    {"dx", required_argument, 0,  0 },
-    {"dy", required_argument, 0,  0 },
-    {"dz", required_argument, 0,  0 },
-    {"broyden", no_argument, 0, 'b' },
-    {"nocoulomb", no_argument , 0 , 0 },
-    {"niter" , required_argument , 0 , 'n' },
-    {"nopairing" , no_argument , 0 , 0 },
-    {"iext" , required_argument , 0 , 'e'},
-    {"alpha_mix" , required_argument , 0 , 'a'},
-    {"force", required_argument , 0 , 'f'},
-    {"nprot", required_argument , 0 , 'Z'},
-    {"nneut", required_argument , 0 , 'N'},
-    {"irun", required_argument , 0 , 'r'},
-    {"resc_dens", no_argument , 0 , 0 },
-    {"iprint_wf" , required_argument , 0 , 'p' },
-    {"ecut" , required_argument , 0 , 0 },
-    {"pproc" , required_argument , 0 , 0 },
-    {"qproc" , required_argument , 0 , 0 },
-    {"nb" , required_argument , 0 , 0 },
-    {"mb" , required_argument , 0 , 0 },
-    {"deformation" , required_argument , 0 , 0 },
-    {"hbo" , required_argument , 0 , 0 },
-    {"q0" , required_argument , 0 , 'q' },
-    {"v0" , required_argument , 0 , 'v' },
-    {"y3" , required_argument , 0 , 0 },
-    {"asym" , required_argument , 0 , 0 },
-    {"z0" , required_argument , 0 , 'z' },
-    {"y0" , required_argument , 0 , 'y' },
-    {"wneck" , required_argument , 0 , 0 },
-    {"rneck" , required_argument , 0 , 0 },
-    {0,         0,                 0,  0 }
-
-  };
-
+  
   MPI_Init( &argc , &argv ) ;
 
   MPI_Comm_rank( MPI_COMM_WORLD, &ip ); 
@@ -513,6 +479,13 @@ int main( int argc , char ** argv )
   
   nb = md.nb;
   
+  // pairing coupling constants
+  ggp = md.ggp;
+ 
+  ggn = md.ggn;
+
+  // pairing mixing parameter.
+  alpha_pairing = md.alpha_pairing;
 
   if( nx < 0 || ny < 0 || nz < 0 || nprot < 0. || nneut < 0. )
 
@@ -1101,7 +1074,19 @@ int main( int argc , char ** argv )
 
 #endif
 
-  dens_func_params( iforce , ihfb , isospin , &cc_edf , ip ,icub) ; 
+  dens_func_params( iforce , ihfb , isospin , &cc_edf , ip ,icub, alpha_pairing) ; 
+
+  if(ggp<1e9){
+    cc_edf.gg_p=ggp;
+    if(isospin==1) cc_edf.gg=ggp;
+  }
+  if(ggn<1e9){
+    cc_edf.gg_n=ggn;
+    if(isospin==-1) cc_edf.gg=ggn;
+  }
+
+  if(ip == 0)
+    fprintf( stdout, " ** Pairing parameters ** \n proton strength = %f neutron strength = %f \n" , cc_edf.gg_p, cc_edf.gg_n ) ;
 
   /* need to set the grid here */
 
@@ -1868,8 +1853,8 @@ int parse_input_file(char * file_name)
 	else if (strcmp (tag,"ecut") == 0)
 	  sscanf (s,"%s %lf %*s",tag,&md.ecut);
 
-	else if (strcmp (tag,"icub") == 0)
-	  sscanf (s,"%s %d %*s",tag,&md.icub);
+//	else if (strcmp (tag,"icub") == 0)
+//	  sscanf (s,"%s %d %*s",tag,&md.icub);
 
 	else if (strcmp (tag,"imass") == 0)
 	  sscanf (s,"%s %d %*s",tag,&md.imass);
@@ -1916,6 +1901,15 @@ int parse_input_file(char * file_name)
         else if (strcmp (tag,"nb") == 0)
 	  sscanf (s,"%s %d %*s",tag,&md.nb);
 	
+        else if (strcmp (tag,"ggp") == 0)
+	  sscanf (s,"%s %lf %*s",tag,&md.ggp);
+	
+        else if (strcmp (tag,"ggn") == 0)
+	  sscanf (s,"%s %lf %*s",tag,&md.ggn);
+
+        else if (strcmp (tag,"alpha_pairing") == 0)
+	  sscanf (s,"%s %lf %*s",tag,&md.alpha_pairing);
+
     }
     
     fclose(fp);

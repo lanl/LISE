@@ -24,7 +24,7 @@ void match_lattices( Lattice_arrays *latt , Lattice_arrays * latt3 , const int n
 
 void coul_pot3( double * vcoul , double * rho , double * work1 , double * work2 , Lattice_arrays * latt_coords , const int nxyz , FFtransf_vars * fftransf_vars , const double dxyz );
 
-int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf ,int icub);
+int dens_func_params( const int iforce , const int ihfb , const int isospin , Couplings * cc_edf , const int ip, int icub, double alpha_pairing);
 
 void read_input_solver( int * nx , int * ny , int * nz , int * nwf_p , int * nwf_n , double * amu_p , double * amu_n , double * dx , double * dy , double * dz , double * e_cut ){
     
@@ -357,6 +357,8 @@ int main( int argc , char ** argv ){
     //Defining cubic or spherical cutoff here.
     int icub;
     icub = 1; // icub = 1 is cubic cutoff, icub = 0 is spherical cutoff.
+    double alpha_pairing=0.0; // pairing mixing parameter: 0 is volume, 0.5 is mixed, and 1.0 is surface.
+    double ggn = 1e10, ggp = 1e10; // pairing coupling constants.
     int ifile,ik,i;
     int ibrk=0;
     FILE *fd_out,*fd_out_L,*fd_out_R,*fd_kin ;
@@ -376,15 +378,31 @@ int main( int argc , char ** argv ){
     read_input_solver( &nx , &ny , &nz , &nwf_p , &nwf_n , &amu_p , &amu_n , &dx , &dy , &dz , &e_cut) ;
     printf("Done. \n" );
     
-    if (argc!=2) {
-        printf("usage: %s z0\n",argv[0]);
-        printf("         z0=boundary between fragments\n");
-        return -1;
-    }
+    double z0; // Boundary for left/right nuclear fragments.
 
+    // User inputs.
+    int p;
+    while ((p=getopt(argc,argv,"f:z:s:"))!=-1) {
+      switch(p){
+        case 'f': iforce=atoi(optarg);break; 
+        case 'z': z0=atof(optarg);break;
+	case 'a': alpha_pairing=atof(optarg);break; 
+	case 'p': ggp=atof(optarg);break; 
+	case 'n': ggn=atof(optarg);break; 
+      }
+    }
     
-    dens_func_params( iforce , ihfb , 1 , &cc_edf , icub);
-    
+    dens_func_params( iforce , ihfb , 1 , &cc_edf , 0, icub, alpha_pairing);
+
+    if(ggp<1e9){
+      cc_edf.gg_p=ggp;
+      if(isospin==1) cc_edf.gg=ggp;
+    }
+    if(ggn<1e9){
+      cc_edf.gg_n=ggn;
+      if(isospin==-1) cc_edf.gg=ggn;
+    }   
+ 
     int nxyz=nx*ny*nz;
     dens_p=malloc(14*nxyz*sizeof(double));
     dens_n=malloc(14*nxyz*sizeof(double));
@@ -411,9 +429,8 @@ int main( int argc , char ** argv ){
     double hbar2m = pow( hbarc , 2.0 ) / ( mass_p + mass_n ) ;
     double emax = 0.5 * pow( acos( -1. ) , 2. ) * hbar2m / pow( dx , 2. ) ;
 
-#ifdef CUBIC_CUTOFF
+if(icub==1)
     emax *= 4.0;
-#endif
 
 #ifdef RANDOM
     emax *= 2.0;
@@ -445,9 +462,7 @@ int main( int argc , char ** argv ){
     double lx=dx*nx;
     double ly=dy*ny;
     double lz=dz*nz;
-    
-    double z0=atof(argv[1]);
-    
+        
     for(i=0;i<nxyz;i++){
       if( latt.za[i]>z0){
             thetaR[i]=1.;
@@ -552,7 +567,7 @@ int main( int argc , char ** argv ){
     
     
     free(dens_p); free(dens_n);free(buff);free(delta_p);free(delta_n);
-    free(buff);free(thetaL);free(thetaR);free(densf_p);free(densf_n);
+    free(thetaL);free(thetaR);free(densf_p);free(densf_n);
     return 0;
     
 }

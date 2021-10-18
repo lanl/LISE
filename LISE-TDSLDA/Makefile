@@ -103,7 +103,7 @@
 ##LISE_LA_REF, targets Netlib reference LAPACK and BLAS:  LAPACKE, CBLAS
 #LA=LISE_LA_ESSL
 
-LINK= $(LISE_FFTW_LNK) $(LISE_LAS_LNK) $(LISE_CUDA_LNK) $(LISE_MPI_LNK)
+LINK= $(LISE_CUDA_LNK) $(LISE_FFTW_LNK) $(LISE_LAS_LNK) $(LISE_MPI_LNK)
 
 OBJS1 = deform.o densities.o external_pot.o operators.o create_destroy_groups.o fposio-wf.o ctdslda.o nuclear-gpu.o getnwfip.o potentials.o system_energy.o wf.o rotation.o  
 
@@ -130,49 +130,49 @@ $(EXE3): $(OBJS3)
 
 nuclear-gpu.o: nuclear-gpu.c vars.h nuclear-gpu.h
 	cp nuclear-gpu.c nuclear-gpu.cu; 
-	$(NCC) $(NCC_SM) -c $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) nuclear-gpu.cu
+	$(NCC) $(NCC_SM) -c -O2 $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) nuclear-gpu.cu
 
 ctdslda.o: ctdslda.c vars.h tdslda_func.h nuclear-gpu.h
-	$(CC) -c $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) -DEXTBOOST -DCP ctdslda.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) -DEXTBOOST -DCP ctdslda.c
 
 ctdslda_rst.o: ctdslda.c vars.h tdslda_func.h nuclear-gpu.h
-	$(CC) -o ctdslda_rst.o -c $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) -DCP -DRSTRT ctdslda.c
+	$(CC) -o ctdslda_rst.o -c -O2 $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) -DCP -DRSTRT ctdslda.c
 
 create_destroy_groups.o: create_destroy_groups.c vars.h
-	$(CC) -c $(LISE_MPI_INC) create_destroy_groups.c
+	$(CC) -c -O2 $(LISE_MPI_INC) create_destroy_groups.c
 
 densities.o: densities.c vars.h tdslda_func.h
-	$(CC) -c $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) densities.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) densities.c
 
 deform.o: deform.c vars.h tdslda_func.h
-	$(CC) -c$(LISE_FFTW_INC) $(LISE_MPI_INC) deform.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_MPI_INC) deform.c
 
 external_pot.o: external_pot.c vars.h tdslda_func.h
-	$(CC) -c $(LISE_FFTW_INC) $(LISE_MPI_INC) external_pot.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_MPI_INC) external_pot.c
 
 fposio-wf.o: fposio-wf.c
-	$(CC) -c fposio-wf.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) fposio-wf.c
 
 getnwfip.o: getnwfip.c
-	$(CC) -c getnwfip.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) getnwfip.c
 
 operators.o: operators.c vars.h
-	$(CC) -c $(LISE_FFTW_INC) operators.c 
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_CUDA_INC) $(LISE_MPI_INC) operators.c 
 
 potentials.o: potentials.c
-	$(CC) -c $(LISE_FFTW_INC) $(LISE_LAS_INC) $(LISE_MPI_INC) potentials.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_LAS_INC) $(LISE_MPI_INC) potentials.c
 
 system_energy.o: system_energy.c vars.h tdslda_func.h
-	$(CC) -c $(LISE_FFTW_INC) $(LISE_MPI_INC) system_energy.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_MPI_INC) system_energy.c
 
 wf.o: wf.c 
-	$(CC) -c $(LISE_FFTW_INC) $(LISE_MPI_INC) wf.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_MPI_INC) wf.c
 
 rotation.o: rotation.c vars.h tdslda_func.h 
-	$(CC) -c $(LISE_FFTW_INC) $(LISE_LAS_INC) $(LISE_MPI_INC) -D$(LA) rotation.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) $(LISE_LAS_INC) $(LISE_MPI_INC) -D$(LA) rotation.c
 
 postprocess.o: postprocess.c vars.h
-	$(CC) -c $(LISE_FFTW_INC) postprocess.c
+	$(CC) -c -O2 $(LISE_FFTW_INC) postprocess.c
 
 
 .PHONY : clean

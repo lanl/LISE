@@ -42,9 +42,9 @@ typedef struct
 
   double * w_abs ;
 
-  double complex * delta ;
+  double _Complex * delta ;
 
-  double complex * delta_ext ;
+  double _Complex * delta_ext ;
 
   double * v_ext ;
 
@@ -52,7 +52,7 @@ typedef struct
 
   double m_tot ;
 
-  double complex w0 ;
+  double _Complex w0 ;
 
   double * a_vf[ 4 ] ;
 
@@ -76,7 +76,7 @@ typedef struct
 
   double * sx , * sy , * sz ;
 
-  double complex * nu ;
+  double _Complex * nu ;
 
   double lx , ly , lz ;
 
@@ -205,7 +205,7 @@ typedef struct
 
   int nxyz3 ;
 
-  double complex * buff , * buff3 ;
+  double _Complex * buff , * buff3 ;
 
   fftw_plan plan_f , plan_b , plan_f3 , plan_b3 ;
 
@@ -219,13 +219,13 @@ typedef struct
 
 {
 
-  double complex ** wavf[ 2 ] ;
+  double _Complex ** wavf[ 2 ] ;
 
-  double complex ** wavf_t_der[ 4 ] ;
+  double _Complex ** wavf_t_der[ 4 ] ;
 
-  double complex ** wavf_predictor[ 2 ] , ** wavf_corrector[ 2 ] , ** wavf_modifier ;
+  double _Complex ** wavf_predictor[ 2 ] , ** wavf_corrector[ 2 ] , ** wavf_modifier ;
 
-  double complex ** deriv_x , ** deriv_y , ** deriv_z ;
+  double _Complex ** deriv_x , ** deriv_y , ** deriv_z ;
 
 } Wfs ;
 

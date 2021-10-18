@@ -114,14 +114,18 @@ double coul_frag( double * rho , double * xa , double * ya , double * za , int n
 }
 
 void makeFragment(double * dens, double *densf,double *theta,int n){
-    
     int i;
-    
-    for(i=0;i<14*n;i++){
+
+    for(i=0;i<12*n;i++){
         densf[i]=dens[i]*theta[i%n];
     }
+
+    for(i=0;i<n;i++){
+        densf[2*i+12*n]=dens[2*i+12*n]*theta[i%n]; // Real part.
+        densf[2*i+1+12*n]=dens[2*i+1+12*n]*theta[i%n]; // Imaginary part.
+    }
+
     return;
-    
 }
 
 double system_energy( Couplings * cc_edf , double * dens_p , double * dens_n , const int nxyz , double complex * delta_p , double complex * delta_n , double complex * nu_p, double complex * nu_n , const double hbar2m , const double dxyz , Lattice_arrays * latt , FFtransf_vars * fftransf_vars , const double time , FILE * fd ,double * buff, FILE * fd_kin ){

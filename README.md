@@ -14,16 +14,17 @@ README file for building and executing the LISE software:
  
 ******************************************************************
 
-0. Obtaining the codes
+## 0. Obtaining the codes
 
 git clone https://github.com/lanl/LISE
 
 ******************************************************************
 
-1. LISE directory structure
+## 1. LISE directory structure
 
 The LISE directory structure will be referenced in these instructions.
 
+```
 LISE
 |-- LICENSE
 |-- LISE-SLDAsolver
@@ -32,6 +33,7 @@ LISE
 |-- LISE.defs
 |-- Makefile
 |-- README.md
+```
 
 './LISE-SLDAsolver': directory that contains the source codes and a default makefile for the LISE solver program; './LISE-SLDAsolver/builds' contains successful 'LISE.defs' and makefiles for a couple of target platforms
 
@@ -47,12 +49,13 @@ LISE
 
 ******************************************************************
 
-2. Software dependencies 
+## 2. Software dependencies 
 
 This version of the LISE solver code is written in C, and uses MPI to employ a distributed memory parallel execution model. It requires a C language compiler, a Linux operating environment, and depends on the MPI, ScaLAPACK, LAPACK, BLAS, and FFTW software libraries.
 
 Note that ScaLAPACK depends on PBLAS, BLACS, MPI, and BLAS. PBLAS depends on BLACS, MPI, and BLAS. BLACS depends on MPI. Since Netlib ScaLAPACK 2.0.0, PBLAS and BLACS are bundled into the ScaLAPACK build. This leads to the simple dependency structure. 
 
+```
 LISE-SLDAsolver
 |-- FFTW
 |-- BLAS
@@ -62,9 +65,11 @@ LISE-SLDAsolver
 |-- ScaLAPACK
     |-- BLAS
     |-- MPI
+```
 
 This version of LISE time-dependent code is written in C, uses a combination of MPI for distributed memory and CUDA for accelerated shared memory parallel execution models. It requires a C language compiler, the NVIDIA CUDA compiler driver, a Linux operating environment, and depends on the FFTW, LAPACK, CUFFT, MPI, and CUDA software libraries.
 
+```
 LISE-TDSLDA
 |-- FFTW
 |-- LAPACK
@@ -73,35 +78,35 @@ LISE-TDSLDA
 |-- CUDA
 |-- CUFFT
 |   `-- CUDA
-
+```
 The LISE software library dependencies are widely supported on HPC systems worldwide, and there exist open-source versions of each, except for NVIDIA's 'mvcc' which is proprietary, that can be built on Linux server clusters. 
 
 No reference versions of these libraries are packaged with the LISE software. References for obtaining the required software are provided for convenience. Most vendors provide a highly tuned variant of each library. However, installation-specific modifications to header files, routine names, apis, variable types, and routine parameters are not uncommon -see the build examples for more details. 
 
 Reference versions of the LISE software dependencies: 
 
-BLAS: Netlib, http://netlib.org/blas/blas.tgz
-LAPACK: Netlib, http://netlib.org/lapack/lapack.tgz
-ScaLAPACK: Netlib, http://netlib.org/scalapack/scalapack-2.0.2.tgz
-FFTW: http://www.fftw.org/fftw-3.3.9.tar.gz 
-MPI: MPICH, http://www.mpich.org/static/downloads/3.4.1/mpich-3.4.1.tar.gz
-MPI: Open MPI, https://www.open-mpi.org/software/ompi/v4.1
-Linux: Ubuntu, https://ubuntu.com/download/server
-Linux: Debian, https://www.debian.org/distrib 
-Linux: Centos, https://www.centos.org/download 
-Linux: Fedora, https://getfedora.org/en/server/download
-Linux: RHEL, https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux
-Linux: FreeBSD,	https://www.freebsd.org/where
-CUDA: NVIDIA, https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
-CUFFT: NVIDIA, http://developer.nvidia.com/cufft
-C compiler: GNU GCC, https://gcc.gnu.org/install/download.html 
-C compiler: IBM XL, https://www.ibm.com/products/xl-cpp-linux-compiler-power
-C compiler: Intel ICC, https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top.html
-CUDA Compiler Driver: NVIDIA, https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html
+- BLAS: Netlib, http://netlib.org/blas/blas.tgz
+- LAPACK: Netlib, http://netlib.org/lapack/lapack.tgz
+- ScaLAPACK: Netlib, http://netlib.org/scalapack/scalapack-2.0.2.tgz
+- FFTW: http://www.fftw.org/fftw-3.3.9.tar.gz 
+- MPI: MPICH, http://www.mpich.org/static/downloads/3.4.1/mpich-3.4.1.tar.gz
+- MPI: Open MPI, https://www.open-mpi.org/software/ompi/v4.1
+- Linux: Ubuntu, https://ubuntu.com/download/server
+- Linux: Debian, https://www.debian.org/distrib 
+- Linux: Centos, https://www.centos.org/download 
+- Linux: Fedora, https://getfedora.org/en/server/download
+- Linux: RHEL, https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux
+- Linux: FreeBSD,	https://www.freebsd.org/where
+- CUDA: NVIDIA, https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html
+- CUFFT: NVIDIA, http://developer.nvidia.com/cufft
+- C compiler: GNU GCC, https://gcc.gnu.org/install/download.html 
+- C compiler: IBM XL, https://www.ibm.com/products/xl-cpp-linux-compiler-power
+- C compiler: Intel ICC, https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top.html
+- CUDA Compiler Driver: NVIDIA, https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html
 		  
 ******************************************************************
 
-3. Target computer architectures  
+## 3. Target computer architectures  
 
 The solver code is parallelized using MPI for a distributed memory network of Linux servers. 
 
@@ -109,7 +114,7 @@ The time-dependent code is parallelized using a hybrid execution model that comb
 
 ******************************************************************
 
-4. Compiling and linking the codes  
+## 4. Compiling and linking the codes  
 
 The GNU Make utility is used for simplicity. 
 
@@ -117,23 +122,23 @@ Edit file './LISE.defs' to the specifics of the target platform. The LISE parame
 
 Invocation(s) from './':
 
-# 	make clean
-# 	make -e 
+```
+ 	make clean
+ 	make -e 
+```
 
 Successful builds will copy program executables to './bin'. A copy of the programs is left in the respective directories './LISE-SLDAsolver', './LISE-TDSLDA'. 
 
 'clean' removes the objects and programs from these directories only, not from './bin'. The programs in './bin' are overwritten on subsequent builds. 
 
 NOTES:
---Implicit function resolution: 
---Underscores and (Sca)LAPACK installations:
 
 --Implicit function resolution: 
 A function that is used somewhere in a code but is not prototyped or declared is known as an implicit function. Such functions are implicitly declared on first use, must be resolved during linking, and the argument types must match those linked into the program text. 
 
 On most high-capability supercomputers deployed in the US DOE system, the vendors or specific labs provide a packaged configuration software ecosystem that includes a proprietary branch of an open-source Linux server operating system, language compilers, network semantics, and a software stack that normally includes prebuilt versions of all LISE dependencies.
 
-LISE routines 'broyden_min.c' and 'rotation.c' call BLAS and LAPACK routines. To appreciate the difficulties in developing a robust build system, consider the APIs and argument types of routines ddot(), dgemm(), dgesdd() as implemented in the Netlib reference, in IBM's ESSL, and in Intel's MKL -because LISE software uses these (and other) routines.
+LISE routines 'broyden_min.c' and 'rotation.c' call BLAS and LAPACK routines. To appreciate the difficulties in developing a robust build system, consider the APIs and argument types of routines ddot(), dgemm(), dgesdd() as implemented in the Netlib reference, in IBM's ESSL, and in Intel's MKL - because LISE software uses these (and other) routines.
 
 Netlib CBLAS / LAPACK / LAPACKE:
 double cblas_ddot(const int, const double *, const int, const double *, const int);
@@ -163,13 +168,13 @@ void dgemm(const char *, const char *, const int *, const int *, const int *, co
 void dgesdd(const char *, const int *, const int *, double *, const int *, double *, double *, const int *, double *, const int *, double *, const int *, int *, int *);
 
 --Underscores and (Sca)LAPACK installations:
-Most compilers require distinct Fortran and C routine namespaces. It is common practice for an underscore '_' to be appended to C routine names which will be called from Fortran. As an example, f2c has added this underscore to all the names in CLAPACK. Thus, Fortran uses 'call dgetrf()' while C uses 'dgetrf_();'. In such builds, the user must pass ALL arguments by reference, i.e. as pointers, since this is how Fortran works. This includes all scalar arguments. This restriction means that you cannot make a call with numbers directly in the parameter sequence. The vendors have supported this name mangling to some extent by providing wrappers to most routines they support.
+Most compilers require distinct Fortran and C routine namespaces. It is common practice for an underscore '\_' to be appended to C routine names which will be called from Fortran. As an example, f2c has added this underscore to all the names in CLAPACK. Thus, Fortran uses 'call dgetrf()' while C uses 'dgetrf_();'. In such builds, the user must pass ALL arguments by reference, i.e. as pointers, since this is how Fortran works. This includes all scalar arguments. This restriction means that you cannot make a call with numbers directly in the parameter sequence. The vendors have supported this name mangling to some extent by providing wrappers to most routines they support.
 
 See, 'https://www.netlib.org/clapack/readme', for more details.
 
 ******************************************************************
 
-5. Running the programs
+## 5. Running the programs
 
 Successful builds will place a copy of the program executables in './bin':
 xlise-static  
@@ -198,8 +203,6 @@ LISE.defs  Makefile.summit-ibmxl-essl  lise-solver-build.log  myjob.lsf
 LISE.defs  Makefile.theta-intel-mkl  lise-solver-build.log  myjob.cblt
 
 NOTES:
--Job launchers:
--Tested architecture:
 
 -Job launchers:
 Different HPC installations use distinct job launching semantics, and often substitute 'mpirun' with a specific launch command with the same intent. For example, 'theta.alcf.anl.gov', a Cray XC40, uses the Cobalt batch scheduler. 'aprun' is the equivalent of the 'mpirun' command used by ALPS in the Cray Linux Environment (CLE). 'summit.olcf.ornl.gov', a IBM AC922, uses IBM Spectrum Load Sharing Facility (LSF) as the batch scheduling system, and 'jsrun' is the equivalent to the 'mpirun' command. Etc.
